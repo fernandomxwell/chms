@@ -6,6 +6,7 @@ use App\Http\Requests\IndexServiceTypeRequest;
 use App\Http\Requests\StoreServiceTypeRequest;
 use App\Http\Requests\UpdateServiceTypeRequest;
 use App\Models\ServiceType;
+use Illuminate\Support\Facades\DB;
 
 class ServiceTypeService
 {
@@ -13,7 +14,19 @@ class ServiceTypeService
     {
         $validatedData = $request->validated();
 
-        return ServiceType::searchBy($validatedData)
+        return ServiceType::query()
+            ->with('activities:name')
+            ->when($validatedData['activity'] ?? null, function ($query) use ($validatedData) {
+                $query->whereHas('activities', function ($query) use ($validatedData) {
+                    $query->where('activities.id', $validatedData['activity']);
+                });
+            })
+            ->when($validatedData['search'] ?? null, function ($query) use ($validatedData) {
+                $query->searchBy($validatedData)
+                    ->orWhereHas('activities', function ($query) use ($validatedData) {
+                        $query->searchBy($validatedData);
+                    });
+            })
             ->select([
                 'id',
                 'name',
@@ -25,22 +38,28 @@ class ServiceTypeService
     public function create(StoreServiceTypeRequest $request): ServiceType
     {
         $data = $request->validated();
+        $activityIds = $data['activities'] ?? [];
+        unset($data['activities']);
 
         $serviceType = ServiceType::withTrashed()
             ->where('name', $data['name'])
             ->first();
 
-        if ($serviceType) {
-            if ($serviceType->trashed()) {
-                $serviceType->restore();
+        DB::transaction(function () use ($data, $activityIds, &$serviceType) {
+            if ($serviceType) {
+                if ($serviceType->trashed()) {
+                    $serviceType->restore();
+                }
+
+                $serviceType->fill($data)->save();
+            } else {
+                $serviceType = ServiceType::create($data);
             }
 
-            $serviceType->fill($data)->save();
+            $serviceType->activities()->sync($activityIds);
+        });
 
-            return $serviceType;
-        }
-
-        return ServiceType::create($data);
+        return $serviceType;
     }
 
     public function update(UpdateServiceTypeRequest $request, int $id): ServiceType
@@ -48,15 +67,25 @@ class ServiceTypeService
         $serviceType = ServiceType::findOrFail($id, ['id']);
 
         $data = $request->validated();
+        $activityIds = $data['activities'] ?? [];
+        unset($data['activities']);
 
-        $serviceType->update($data);
+        DB::transaction(function () use ($data, $activityIds, $serviceType) {
+            $serviceType->update($data);
+            $serviceType->activities()->sync($activityIds);
+        });
 
         return $serviceType;
     }
 
     public function delete(int $id): void
     {
-        ServiceType::findOrFail($id, ['id'])->delete();
+        $serviceType = ServiceType::findOrFail($id, ['id']);
+
+        DB::transaction(function () use ($serviceType) {
+            $serviceType->activities()->detach();
+            $serviceType->delete();
+        });
     }
 
     public function getAll($attributes = ['*'])

@@ -12,7 +12,7 @@
         <div class="row my-1">
             <div class="col-md-6 my-1 offset-md-6">
                 <div class="input-group">
-                    <input type="text" class="form-control @error('search') is-invalid @enderror" name="search" value="{{ old('search', request('search')) }}" maxlength="100" placeholder="@lang('search_by_name')">
+                    <input type="text" class="form-control @error('search') is-invalid @enderror" name="search" value="{{ old('search', request('search')) }}" maxlength="100" placeholder="@lang('search_by_name_activity')">
                     <button class="btn btn-outline-secondary" type="submit">@lang('search')</button>
                     @error('search')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -28,6 +28,7 @@
                 <tr>
                     <th class="text-nowrap">@lang('No')</th>
                     <th class="text-nowrap">@lang('name')</th>
+                    <th class="text-nowrap">@lang('activities.index')</th>
                     <th class="text-nowrap">@lang('actions')</th>
                 </tr>
             </thead>
@@ -36,6 +37,13 @@
                     <tr>
                         <td>{{ paginatedIndex($index + 1, $serviceTypes->currentPage(), $serviceTypes->perPage()) }}</td>
                         <td>{!! highlightMatch($serviceType->name, request('search')) !!}</td>
+                        <td>
+                            @forelse($serviceType->activities as $activity)
+                                <span class="badge bg-info me-1">{!! highlightMatch($activity->name, request('search')) !!}</span>
+                            @empty
+                                <span class="text-muted">-</span>
+                            @endforelse
+                        </td>
                         <td class="text-nowrap">
                             <a class="btn btn-info text-light mr-1 mb-1" href="{{ route('service_types.show', $serviceType->id) }}">@lang('show')</a>
                             <a class="btn btn-success mr-1 mb-1" href="{{ route('service_types.edit', $serviceType->id) }}">@lang('edit')</a>
@@ -66,7 +74,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="text-center">@lang('no_records_found')</td>
+                        <td colspan="4" class="text-center">@lang('no_records_found')</td>
                     </tr>
                 @endforelse
             </tbody>

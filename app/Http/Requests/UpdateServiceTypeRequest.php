@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +19,7 @@ class UpdateServiceTypeRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -30,6 +31,8 @@ class UpdateServiceTypeRequest extends FormRequest
                 Rule::unique('service_types')->ignore($this->route('service_type'))->whereNull('deleted_at'),
             ],
             'description' => 'nullable|string',
+            'activities' => 'nullable|array',
+            'activities.*' => 'integer|exists:activities,id',
         ];
     }
 }

@@ -13,5 +13,16 @@
         <textarea class="form-control" rows="10" readonly>{{ $serviceType->description }}</textarea>
     </div>
 
+    <div class="form-group mb-3">
+        <label class="form-label">@lang('activities.index'):</label>
+        <div>
+            @forelse($serviceType->activities as $activity)
+                <span class="badge bg-info me-1">{{ $activity->name }}</span>
+            @empty
+                <span class="text-muted">@lang('no_activities_assigned')</span>
+            @endforelse
+        </div>
+    </div>
+
     <a class="btn btn-secondary" href="{{ url()->previous() }}">@lang('back')</a>
 @endsection

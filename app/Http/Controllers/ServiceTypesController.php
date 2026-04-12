@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\IndexServiceTypeRequest;
 use App\Http\Requests\StoreServiceTypeRequest;
 use App\Http\Requests\UpdateServiceTypeRequest;
+use App\Models\Activity;
 use App\Models\ServiceType;
 use App\Services\ServiceTypeService;
 use App\Traits\HandlesControllerErrors;
@@ -59,7 +60,11 @@ class ServiceTypesController extends Controller implements HasMiddleware
     public function create()
     {
         try {
-            return view('service_types.create');
+            $activities = Activity::orderBy('name')->get(['id', 'name']);
+
+            return view('service_types.create', [
+                'activities' => $activities,
+            ]);
         } catch (\Exception $e) {
             return $this->handleException($e, 'service_types.index');
         }
@@ -86,6 +91,8 @@ class ServiceTypesController extends Controller implements HasMiddleware
     public function show(ServiceType $serviceType)
     {
         try {
+            $serviceType->load('activities');
+
             return view('service_types.show', [
                 'serviceType' => $serviceType,
             ]);
@@ -100,8 +107,12 @@ class ServiceTypesController extends Controller implements HasMiddleware
     public function edit(ServiceType $serviceType)
     {
         try {
+            $serviceType->load('activities');
+            $activities = Activity::orderBy('name')->get(['id', 'name']);
+
             return view('service_types.edit', [
                 'serviceType' => $serviceType,
+                'activities' => $activities,
             ]);
         } catch (\Exception $e) {
             return $this->handleException($e, 'service_types.index');

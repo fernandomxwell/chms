@@ -23,6 +23,15 @@
             @enderror
         </div>
 
+        <div class="mb-3">
+            <label for="activities" class="form-label">@lang('service_types.select_activities'):</label>
+            <select name="activities[]" id="activities" class="formselect form-control" multiple>
+                @foreach($activities as $activity)
+                    <option value="{{ $activity->id }}" {{ $serviceType->activities->contains($activity->id) ? 'selected' : '' }}>{{ $activity->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
         <button type="submit" class="btn btn-primary">@lang('update')</button>
 
         <a class="btn btn-secondary" href="{{ url()->previous() }}">@lang('back')</a>

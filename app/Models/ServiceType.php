@@ -31,8 +31,6 @@ class ServiceType extends Model
 
     /**
      * Get the searchable attributes
-     *
-     * @return array
      */
     public function getSearchable(): array
     {
@@ -49,5 +47,15 @@ class ServiceType extends Model
     public function congregants()
     {
         return $this->belongsToMany(Congregant::class, 'congregant_service_types');
+    }
+
+    /**
+     * Get the activities.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function activities()
+    {
+        return $this->belongsToMany(Activity::class);
     }
 }

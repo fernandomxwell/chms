@@ -33,8 +33,6 @@ class Activity extends Model
 
     /**
      * Get the searchable attributes
-     *
-     * @return array
      */
     public function getSearchable(): array
     {
@@ -46,10 +44,20 @@ class Activity extends Model
     /**
      * Get the schedule groups.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function scheduleGroups()
     {
         return $this->hasMany(ScheduleGroup::class);
+    }
+
+    /**
+     * Get the service types.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function serviceTypes()
+    {
+        return $this->belongsToMany(ServiceType::class);
     }
 }
