@@ -29,7 +29,7 @@ class RunSetupTasks extends Command
 
         $this->call('key:generate');
         $this->call('migrate');
-        // $this->call('db:seed');
+        $this->call('db:seed');
         $this->call('storage:link');
 
         $this->call('app:create-menu', ['menu' => 'Home']);
