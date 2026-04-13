@@ -21,7 +21,7 @@ class ScheduleService
         return ScheduleGroup::with('activity:id,name')
             ->when($validatedData['search'] ?? null, function ($query) use ($validatedData) {
                 $query->whereHas('activity', function ($q) use ($validatedData) {
-                    $q->where('name', 'like', '%' . $validatedData['search'] . '%');
+                    $q->where('name', 'like', '%'.$validatedData['search'].'%');
                 });
             })
             ->orderByDesc('id')
@@ -67,11 +67,11 @@ class ScheduleService
                 $date = $date->format('Y-m-d');
 
                 foreach ($data['service_types'] as $serviceTypeId => $serviceType) {
-                    if (!isset($serviceTypes[$serviceTypeId])) {
+                    if (! isset($serviceTypes[$serviceTypeId])) {
                         continue;
                     }
 
-                    if (!isset($serviceType['include'])) {
+                    if (! isset($serviceType['include'])) {
                         continue;
                     }
 
@@ -118,7 +118,7 @@ class ScheduleService
         $availableServiceTypes = ServiceType::whereIntegerInRaw('id', $availableServiceTypesIds)
             ->get([
                 'id',
-                'name'
+                'name',
             ])
             ->keyBy('id');
 
@@ -130,7 +130,7 @@ class ScheduleService
             $row = ['date' => $date];
 
             foreach ($scheduleByServiceType as $serviceTypeId => $schedule) {
-                if (!isset($availableServiceTypes[$serviceTypeId])) {
+                if (! isset($availableServiceTypes[$serviceTypeId])) {
                     continue;
                 }
 
@@ -174,12 +174,12 @@ class ScheduleService
         bool $isRepeatable
     ) {
         $baseQuery = Congregant::query()
-            // ->where('status', 'member')
             ->whereHas('activities', function ($q) use ($activityId) {
                 $q->where('activity_id', $activityId);
             })
-            ->whereHas('serviceTypes', function ($q) use ($serviceTypeId) {
-                $q->where('service_type_id', $serviceTypeId);
+            ->whereHas('serviceTypesPivot', function ($q) use ($activityId, $serviceTypeId) {
+                $q->where('activity_id', $activityId)
+                    ->where('service_type_id', $serviceTypeId);
             })
             ->whereDoesntHave('schedules', function ($q) use ($date) {
                 $q->where('scheduled_date', $date);
@@ -193,7 +193,7 @@ class ScheduleService
             })
             ->get(['id']);
 
-        if ($freshCongregants->count() >= $requiredCount || !$isRepeatable) {
+        if ($freshCongregants->count() >= $requiredCount || ! $isRepeatable) {
             return $freshCongregants;
         }
 

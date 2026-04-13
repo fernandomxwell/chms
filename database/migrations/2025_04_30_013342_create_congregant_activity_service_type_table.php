@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('congregant_service_types', function (Blueprint $table) {
+        Schema::create('congregant_activity_service_types', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('congregant_id');
             $table->unsignedBigInteger('service_type_id');
+            $table->unsignedBigInteger('activity_id');
             $table->timestamps();
 
-            $table->unique(['congregant_id', 'service_type_id']);
+            $table->unique(['congregant_id', 'service_type_id', 'activity_id'], 'congregant_activity_service_type_unique');
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('congregant_service_types');
+        Schema::dropIfExists('congregant_activity_service_types');
     }
 };

@@ -43,13 +43,16 @@
                             <th>@lang('service_types.index')</th>
                             <th class="text-center">@lang('include')?</th>
                             <th style="width: 100px;">@lang('count')</th>
-                            <th style="width: 150px;" class="text-center">@lang('repeatable')?</th> <!-- Diubah -->
+                            <th style="width: 150px;" class="text-center">@lang('repeatable')?</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($serviceTypes as $serviceType)
-                            <tr>
-                                <td>{{ $serviceType->name }}</td>
+                            <tr class="service-type-row" data-activity-ids="{{ $serviceType->activities->pluck('id')->implode(',') }}">
+                                <td>
+                                    {{ $serviceType->name }}
+                                    <small class="text-muted">({{ $serviceType->activities->pluck('name')->implode(', ') }})</small>
+                                </td>
                                 <td class="text-center">
                                     <div class="form-check form-check-inline d-flex justify-content-center">
                                         <input class="form-check-input @error("service_types.{$serviceType->id}.include") is-invalid @enderror" type="checkbox"
@@ -116,12 +119,12 @@
                 delay: 250,
                 data: function (params) {
                     return {
-                        search: params.term, // search term
+                        search: params.term,
                         page: params.page || 1
                     };
                 },
                 processResults: function (data, $params) {
-                    allowInitialLoad = false; // disable after first load
+                    allowInitialLoad = false;
 
                     return {
                         results: data.items,
@@ -129,10 +132,23 @@
                             more: data.pagination.more
                         }
                     };
-
                 },
                 cache: true
             },
+        });
+
+        $('#activity_id').on('change', function() {
+            const selectedActivityId = $(this).val();
+            $('.service-type-row').each(function() {
+                const activityIds = String($(this).data('activity-ids') || '').split(',');
+                if (!selectedActivityId || activityIds.includes(selectedActivityId)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                    $(this).find('input[type="checkbox"]').prop('checked', false);
+                    $(this).find('input[type="number"]').val(1);
+                }
+            });
         });
     </script>
 @endsection

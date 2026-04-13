@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('email', 100)->nullable()->index();
             $table->date('date_of_baptism')->nullable();
             $table->enum('status', ['member', 'sympathizer'])->default('sympathizer')->index();
+            $table->boolean('can_serve_consecutively')->default(false)->index();
             $table->timestamps();
             $table->softDeletes()->index();
         });

@@ -16,6 +16,7 @@ class ScheduleController extends Controller implements HasMiddleware
     use HandlesControllerErrors;
 
     private $scheduleService;
+
     private $serviceTypeService;
 
     /**
@@ -65,7 +66,7 @@ class ScheduleController extends Controller implements HasMiddleware
             $serviceTypes = $this->serviceTypeService->getAll([
                 'id',
                 'name',
-            ]);
+            ], ['activities:id,name']);
 
             return view('schedules.create', [
                 'serviceTypes' => $serviceTypes,

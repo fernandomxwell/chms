@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name')->index();
             $table->string('link')->nullable();
             $table->text('actions')->nullable();
+            $table->unsignedSmallInteger('order')->nullable()->index()->comment('Order of the menu item for sorting purposes');
             $table->timestamps();
         });
     }

@@ -53,6 +53,7 @@ class CongregantServiceTypeController extends Controller implements HasMiddlewar
             return $this->handleException($e, 'congregant_services.index');
         }
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -60,7 +61,7 @@ class CongregantServiceTypeController extends Controller implements HasMiddlewar
     {
         try {
             $activities = Activity::orderBy('name')->get(['id', 'name']);
-            $serviceTypes = ServiceType::orderBy('name')->get(['id', 'name']);
+            $serviceTypes = ServiceType::with('activities:id,name')->orderBy('name')->get(['id', 'name']);
 
             return view('congregant_service_types.create', [
                 'activities' => $activities,
@@ -70,6 +71,7 @@ class CongregantServiceTypeController extends Controller implements HasMiddlewar
             return $this->handleException($e, 'congregant_services.index');
         }
     }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -94,26 +96,29 @@ class CongregantServiceTypeController extends Controller implements HasMiddlewar
             $congregant = Congregant::query()
                 ->with([
                     'serviceTypes:id,name',
+                    'serviceTypesPivot:id,congregant_id,service_type_id,activity_id',
+                    'serviceTypesPivot.activity:id,name',
                     'activities:id,name',
                 ])
                 ->findOrFail($id, [
                     'id',
                     'full_name',
-                    'can_serve_consecutively'
+                    'can_serve_consecutively',
                 ]);
 
             $activities = Activity::orderBy('name')->get(['id', 'name']);
-            $serviceTypes = ServiceType::orderBy('name')->get(['id', 'name']);
+            $serviceTypes = ServiceType::with('activities:id,name')->orderBy('name')->get(['id', 'name']);
 
             return view('congregant_service_types.edit', [
                 'congregant' => $congregant,
                 'activities' => $activities,
-                'serviceTypes' => $serviceTypes
+                'serviceTypes' => $serviceTypes,
             ]);
         } catch (\Exception $e) {
             return $this->handleException($e, 'congregant_services.index');
         }
     }
+
     /**
      * Update the specified resource in storage.
      */
@@ -128,6 +133,7 @@ class CongregantServiceTypeController extends Controller implements HasMiddlewar
             return $this->handleException($e, 'congregant_services.index');
         }
     }
+
     /**
      * Remove the specified resource from storage.
      */

@@ -24,7 +24,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="start_time" class="form-label">@lang('start_time'):</label>
+            <label for="start_time" class="form-label">@lang('start_time') <small class="text-muted">(@lang('fill_in_the_next_nearest_schedule'))</small>:</label>
             <input type="datetime-local" name="start_time" id="start_time" class="form-control @error('start_time') is-invalid @enderror" value="{{ old('start_time', $activity->start_time->format('Y-m-d H:i')) }}" required>
             @error('start_time')
                 <div class="invalid-feedback">{{ $message }}</div>

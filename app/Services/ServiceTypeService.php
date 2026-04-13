@@ -88,8 +88,8 @@ class ServiceTypeService
         });
     }
 
-    public function getAll($attributes = ['*'])
+    public function getAll($attributes = ['*'], array $relations = [])
     {
-        return ServiceType::select($attributes)->get();
+        return ServiceType::select($attributes)->with($relations)->get();
     }
 }

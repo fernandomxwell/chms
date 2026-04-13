@@ -55,22 +55,32 @@
                 </h2>
                 <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
                     <div class="accordion-body">
-                        <div class="row">
-                            @foreach($serviceTypes as $serviceType)
-                                <div class="col-md-3">
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input @error('service_type_ids') is-invalid @enderror" type="checkbox" name="service_type_ids[]" value="{{ $serviceType->id }}" {{ old('service_type_ids') !== null ? (in_array($serviceType->id, old('service_type_ids')) ? 'checked' : '') : '' }}>
-                                        <label class="form-check-label" for="{{ $serviceType->name }}">{{ $serviceType->name }}</label>
-                                    </div>
+                        @php
+                            $allActivities = $serviceTypes
+                                ->flatMap(fn($st) => $st->activities)
+                                ->unique('id')
+                                ->sortBy('name');
+                        @endphp
+
+                        @foreach($allActivities as $activity)
+                            <div class="service-type-group mb-3">
+                                <h6 class="text-muted">{{ $activity->name }}</h6>
+                                <div class="row">
+                                    @foreach($serviceTypes->filter(fn($st) => $st->activities->contains('id', $activity->id)) as $serviceType)
+                                        <div class="col-md-3">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input @error('service_types.' . $activity->id) is-invalid @enderror" type="checkbox" name="service_types[{{ $activity->id }}][]" value="{{ $serviceType->id }}" {{ old('service_types.' . $activity->id) !== null ? (in_array($serviceType->id, old('service_types.' . $activity->id)) ? 'checked' : '') : '' }}>
+                                                <label class="form-check-label" for="{{ $serviceType->name }}">{{ $serviceType->name }}</label>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
-                            @error('service_type_ids')
-                                <div class="small text-danger">{{ $message }}</div>
-                            @enderror
-                            @error('service_type_ids.*')
-                                <div class="small text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
+                            </div>
+                        @endforeach
+
+                        @error('service_types')
+                            <div class="small text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -110,12 +120,12 @@
                 delay: 250,
                 data: function (params) {
                     return {
-                        search: params.term, // search term
+                        search: params.term,
                         page: params.page || 1
                     };
                 },
                 processResults: function (data, $params) {
-                    allowInitialLoad = false; // disable after first load
+                    allowInitialLoad = false;
 
                     return {
                         results: data.items,
@@ -123,7 +133,6 @@
                             more: data.pagination.more
                         }
                     };
-
                 },
                 cache: true
             },

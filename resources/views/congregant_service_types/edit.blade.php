@@ -52,22 +52,57 @@
                 </h2>
                 <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
                     <div class="accordion-body">
-                        <div class="row">
-                            @foreach($serviceTypes as $serviceType)
-                                <div class="col-md-3">
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input @error('service_type_ids') is-invalid @enderror" type="checkbox" name="service_type_ids[]" value="{{ $serviceType->id }}" {{ in_array($serviceType->id, old('service_type_ids', $congregant->serviceTypes->pluck('id')->toArray())) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="{{ $serviceType->name }}">{{ $serviceType->name }}</label>
-                                    </div>
-                                </div>
-                            @endforeach
-                            @error('service_type_ids')
-                                <div class="small text-danger">{{ $message }}</div>
-                            @enderror
-                            @error('service_type_ids.*')
-                                <div class="small text-danger">{{ $message }}</div>
-                            @enderror
+                        <div class="mb-3">
+                            <label for="activity_filter" class="form-label">@lang('filter_by_activity'):</label>
+                            <select class="form-select" id="activity_filter" onchange="filterServiceTypes()">
+                                <option value="">@lang('all_activities')</option>
+                                @foreach($activities as $activity)
+                                    <option value="{{ $activity->id }}">{{ $activity->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
+
+                        @php
+                            $allActivities = $serviceTypes
+                                ->flatMap(fn($st) => $st->activities)
+                                ->unique('id')
+                                ->sortBy('name');
+
+                            $selectedServiceTypes = $congregant->serviceTypesPivot
+                                ->filter(fn($p) => $p->activity_id)
+                                ->groupBy('activity_id')
+                                ->map(fn($pivots) => $pivots->pluck('service_type_id')->toArray());
+                        @endphp
+
+                        @foreach($allActivities as $activity)
+                            <div class="service-type-group mb-3" data-activity-id="{{ $activity->id }}">
+                                <h6 class="text-muted">{{ $activity->name }}</h6>
+                                <div class="row">
+                                    @foreach($serviceTypes->filter(fn($st) => $st->activities->contains('id', $activity->id)) as $serviceType)
+                                        <div class="col-md-3">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input @error('service_types.' . $activity->id) is-invalid @enderror" type="checkbox" name="service_types[{{ $activity->id }}][]" value="{{ $serviceType->id }}"
+                                                    @php
+                                                        $isChecked = false;
+                                                        if (old('service_types.' . $activity->id)) {
+                                                            $isChecked = in_array($serviceType->id, old('service_types.' . $activity->id));
+                                                        } elseif (isset($selectedServiceTypes[$activity->id])) {
+                                                            $isChecked = in_array($serviceType->id, $selectedServiceTypes[$activity->id]);
+                                                        }
+                                                        echo $isChecked ? 'checked' : '';
+                                                    @endphp
+                                                >
+                                                <label class="form-check-label" for="{{ $serviceType->name }}">{{ $serviceType->name }}</label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+
+                        @error('service_types')
+                            <div class="small text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -103,5 +138,19 @@
         };
         let newOption = new Option(defaultOption.text, defaultOption.id, true, true);
         $('#congregant_id').append(newOption).trigger('change');
+
+        function filterServiceTypes() {
+            const selectedActivityId = document.getElementById('activity_filter').value;
+            const groups = document.querySelectorAll('.service-type-group');
+
+            groups.forEach(group => {
+                const activityId = group.dataset.activityId;
+                if (!selectedActivityId || activityId === selectedActivityId) {
+                    group.style.display = 'block';
+                } else {
+                    group.style.display = 'none';
+                }
+            });
+        }
     </script>
 @endsection

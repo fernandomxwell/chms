@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Traits\Models\Searchable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Congregant extends Model
@@ -38,8 +40,6 @@ class Congregant extends Model
 
     /**
      * Get the searchable attributes
-     *
-     * @return array
      */
     public function getSearchable(): array
     {
@@ -73,17 +73,23 @@ class Congregant extends Model
     /**
      * Get the serviceTypes.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function serviceTypes()
     {
-        return $this->belongsToMany(ServiceType::class, 'congregant_service_types');
+        return $this->belongsToMany(ServiceType::class, 'congregant_activity_service_types')
+            ->withPivot('activity_id');
+    }
+
+    public function serviceTypesPivot(): HasMany
+    {
+        return $this->hasMany(CongregantActivityServiceType::class);
     }
 
     /**
      * Get the schedules.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function schedules()
     {
@@ -93,7 +99,7 @@ class Congregant extends Model
     /**
      * Get the activities.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function activities()
     {

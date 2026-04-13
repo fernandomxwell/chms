@@ -17,8 +17,10 @@ class CongregantServiceTypeService
 
         return Congregant::query()
             ->with([
-                'activities:name',
-                'serviceTypes:name',
+                'activities:id,name',
+                'serviceTypes:id,name',
+                'serviceTypesPivot:id,congregant_id,service_type_id,activity_id',
+                'serviceTypesPivot.activity:id,name',
             ])
             ->when($validatedData['search'] ?? null, function (Builder $query) use ($validatedData) {
                 $query->searchBy($validatedData)
@@ -28,8 +30,8 @@ class CongregantServiceTypeService
                     ->orWhereHas('serviceTypes', function (Builder $query) use ($validatedData) {
                         $query->searchBy($validatedData);
                     });
-            }, function (Builder $query) use ($validatedData) {
-                $query->searchBy($validatedData)
+            }, function (Builder $query) {
+                $query->searchBy([])
                     ->has('activities')
                     ->orHas('serviceTypes');
             })
@@ -50,9 +52,9 @@ class CongregantServiceTypeService
         $congregantId = $validatedData['congregant_id'];
         $canServeConsecutively = $validatedData['can_serve_consecutively'];
         $activityIds = $validatedData['activity_ids'];
-        $serviceTypeIds = $validatedData['service_type_ids'];
+        $serviceTypes = $validatedData['service_types'] ?? [];
 
-        $this->assign($congregantId, $canServeConsecutively, $activityIds, $serviceTypeIds);
+        $this->assign($congregantId, $canServeConsecutively, $activityIds, $serviceTypes);
     }
 
     public function update(UpdateCongregantServiceTypeRequest $request, int $congregantId)
@@ -61,27 +63,38 @@ class CongregantServiceTypeService
 
         $canServeConsecutively = $validatedData['can_serve_consecutively'];
         $activityIds = $validatedData['activity_ids'];
-        $serviceTypeIds = $validatedData['service_type_ids'];
+        $serviceTypes = $validatedData['service_types'] ?? [];
 
-        $this->assign($congregantId, $canServeConsecutively, $activityIds, $serviceTypeIds);
+        $this->assign($congregantId, $canServeConsecutively, $activityIds, $serviceTypes);
     }
 
     public function delete(int $congregantId)
     {
         $congregant = Congregant::findOrFail($congregantId, ['id']);
         $congregant->serviceTypes()->detach();
+        $congregant->activities()->detach();
     }
 
-    protected function assign(int $congregantId, bool $canServeConsecutively, array $activityIds, array $serviceTypeIds): void
+    protected function assign(int $congregantId, bool $canServeConsecutively, array $activityIds, array $serviceTypes): void
     {
-        DB::transaction(function () use ($congregantId, $canServeConsecutively, $activityIds, $serviceTypeIds) {
+        DB::transaction(function () use ($congregantId, $canServeConsecutively, $activityIds, $serviceTypes) {
             $congregant = Congregant::findOrFail($congregantId, ['id']);
 
             $congregant->update([
                 'can_serve_consecutively' => $canServeConsecutively,
             ]);
+
             $congregant->activities()->sync($activityIds);
-            $congregant->serviceTypes()->sync($serviceTypeIds);
+
+            $congregant->serviceTypes()->detach();
+
+            foreach ($serviceTypes as $activityId => $serviceTypeIds) {
+                foreach ((array) $serviceTypeIds as $serviceTypeId) {
+                    $congregant->serviceTypes()->attach($serviceTypeId, [
+                        'activity_id' => $activityId,
+                    ]);
+                }
+            }
         });
     }
 }
