@@ -29,7 +29,6 @@
                     <th class="text-nowrap">@lang('No')</th>
                     <th class="text-nowrap">@lang('full_name')</th>
                     <th class="text-nowrap">@lang('activities.index')</th>
-                    <th class="text-nowrap">@lang('service_types.index')</th>
                     <th class="text-nowrap">@lang('notes')</th>
                     <th class="text-nowrap">@lang('actions')</th>
                 </tr>
@@ -39,19 +38,33 @@
                 <tr>
                     <td>{{ paginatedIndex($index + 1, $congregants->currentPage(), $congregants->perPage()) }}</td>
                     <td class="text-nowrap">{!! highlightMatch($congregant->full_name, request('search')) !!}</td>
-                    <td>{!! highlightMatch($congregant->activities->pluck('name')->implode(', '), request('search')) !!}</td>
                     <td>
                         @php
-                            $groupedServiceTypes = $congregant->serviceTypesPivot
+                            $activitiesWithServiceTypes = $congregant->serviceTypesPivot
                                 ->filter(fn($p) => $p->activity_id)
-                                ->groupBy('activity_id')
-                                ->map(fn($pivots) => $pivots->pluck('serviceType.name')->filter()->implode(', '));
+                                ->groupBy('activity_id');
                         @endphp
-                        @forelse($groupedServiceTypes as $activityName => $serviceTypeNames)
-                            <div><strong>{{ $activityName }}:</strong> {!! highlightMatch($serviceTypeNames, request('search')) !!}</div>
-                        @empty
+                        @if($activitiesWithServiceTypes->isNotEmpty())
+                            <ul class="mb-1 ps-3">
+                                @foreach($activitiesWithServiceTypes as $activityId => $pivots)
+                                    @php
+                                        $activityName = $pivots->first()->activity?->name;
+                                        $serviceTypes = $pivots->pluck('serviceType.name')->filter();
+                                    @endphp
+                                    @if($activityName && $serviceTypes->isNotEmpty())
+                                        <li><strong>{!! highlightMatch($activityName, request('search')) !!}:</strong>
+                                            <ul class="ps-3 mb-0">
+                                                @foreach($serviceTypes as $serviceType)
+                                                    <li>{!! highlightMatch($serviceType, request('search')) !!}</li>
+                                                @endforeach
+                                            </ul>
+                                        </li>
+                                    @endif
+                                @endforeach
+                            </ul>
+                        @else
                             -
-                        @endforelse
+                        @endif
                     </td>
                     <td>{{ $congregant->can_serve_consecutively ? __('willing_to_serve') : '' }}</td>
                     <td class="text-nowrap">
@@ -83,7 +96,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center">@lang('no_records_found')</td>
+                    <td colspan="5" class="text-center">@lang('no_records_found')</td>
                 </tr>
             @endforelse
             </tbody>

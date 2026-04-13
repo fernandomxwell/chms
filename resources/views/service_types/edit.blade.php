@@ -24,12 +24,15 @@
         </div>
 
         <div class="mb-3">
-            <label for="activities" class="form-label">@lang('service_types.select_activities'):</label>
-            <select name="activities[]" id="activities" class="formselect form-control" multiple>
+            <label class="form-label">@lang('service_types.select_activities'):</label>
+            <div class="vstack gap-2">
                 @foreach($activities as $activity)
-                    <option value="{{ $activity->id }}" {{ $serviceType->activities->contains($activity->id) ? 'selected' : '' }}>{{ $activity->name }}</option>
+                    <div class="form-check">
+                        <input type="checkbox" name="activities[]" id="activity_{{ $activity->id }}" value="{{ $activity->id }}" class="form-check-input" {{ $serviceType->activities->contains($activity->id) ? 'checked' : '' }}>
+                        <label for="activity_{{ $activity->id }}" class="form-check-label">{{ $activity->name }}</label>
+                    </div>
                 @endforeach
-            </select>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-primary">@lang('update')</button>
