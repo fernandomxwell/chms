@@ -55,6 +55,16 @@
                 </h2>
                 <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingTwo">
                     <div class="accordion-body">
+                        <div class="mb-3">
+                            <label for="activity_filter" class="form-label">@lang('filter_by_activity'):</label>
+                            <select class="form-select" id="activity_filter" onchange="filterServiceTypes()">
+                                <option value="">@lang('all_activities')</option>
+                                @foreach($activities as $activity)
+                                    <option value="{{ $activity->id }}">{{ $activity->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         @php
                             $allActivities = $serviceTypes
                                 ->flatMap(fn($st) => $st->activities)
@@ -63,7 +73,7 @@
                         @endphp
 
                         @foreach($allActivities as $activity)
-                            <div class="service-type-group mb-3">
+                            <div class="service-type-group mb-3" data-activity-id="{{ $activity->id }}">
                                 <h6 class="text-muted">{{ $activity->name }}</h6>
                                 <div class="row">
                                     @foreach($serviceTypes->filter(fn($st) => $st->activities->contains('id', $activity->id)) as $serviceType)
@@ -137,5 +147,23 @@
                 cache: true
             },
         });
+
+    function filterServiceTypes() {
+            const activityId = $('#activity_filter').val();
+            
+            $('.service-type-group').each(function() {
+                if (activityId === '') {
+                    $(this).show();
+                } else {
+                    const groupActivityId = $(this).data('activity-id');
+                    
+                    if (groupActivityId == activityId) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                }
+            });
+        }
     </script>
 @endsection

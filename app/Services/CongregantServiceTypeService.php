@@ -17,14 +17,13 @@ class CongregantServiceTypeService
 
         return Congregant::query()
             ->with([
-                'activities:id,name',
                 'serviceTypes:id,name',
                 'serviceTypesPivot:id,congregant_id,service_type_id,activity_id',
                 'serviceTypesPivot.activity:id,name',
             ])
             ->when($validatedData['search'] ?? null, function (Builder $query) use ($validatedData) {
                 $query->searchBy($validatedData)
-                    ->orWhereHas('activities', function (Builder $query) use ($validatedData) {
+                    ->orWhereHas('serviceTypesPivot.activity', function (Builder $query) use ($validatedData) {
                         $query->searchBy($validatedData);
                     })
                     ->orWhereHas('serviceTypes', function (Builder $query) use ($validatedData) {
@@ -32,8 +31,7 @@ class CongregantServiceTypeService
                     });
             }, function (Builder $query) {
                 $query->searchBy([])
-                    ->has('activities')
-                    ->orHas('serviceTypes');
+                    ->has('serviceTypes');
             })
             ->select([
                 'id',
@@ -72,19 +70,16 @@ class CongregantServiceTypeService
     {
         $congregant = Congregant::findOrFail($congregantId, ['id']);
         $congregant->serviceTypes()->detach();
-        $congregant->activities()->detach();
     }
 
     protected function assign(int $congregantId, bool $canServeConsecutively, array $activityIds, array $serviceTypes): void
     {
-        DB::transaction(function () use ($congregantId, $canServeConsecutively, $activityIds, $serviceTypes) {
+        DB::transaction(function () use ($congregantId, $canServeConsecutively, $serviceTypes) {
             $congregant = Congregant::findOrFail($congregantId, ['id']);
 
             $congregant->update([
                 'can_serve_consecutively' => $canServeConsecutively,
             ]);
-
-            $congregant->activities()->sync($activityIds);
 
             $congregant->serviceTypes()->detach();
 

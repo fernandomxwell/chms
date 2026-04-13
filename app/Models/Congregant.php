@@ -70,6 +70,17 @@ class Congregant extends Model
         return $this->date_of_baptism ? $this->date_of_baptism->format('Y-m-d') : null;
     }
 
+    public function getActivitiesAttribute()
+    {
+        return $this->serviceTypesPivot()
+            ->with('activity')
+            ->get()
+            ->pluck('activity')
+            ->filter()
+            ->unique('id')
+            ->values();
+    }
+
     /**
      * Get the serviceTypes.
      *
@@ -94,15 +105,5 @@ class Congregant extends Model
     public function schedules()
     {
         return $this->belongsToMany(Schedule::class, 'congregant_schedules');
-    }
-
-    /**
-     * Get the activities.
-     *
-     * @return BelongsToMany
-     */
-    public function activities()
-    {
-        return $this->belongsToMany(Activity::class, 'congregant_activities');
     }
 }

@@ -98,7 +98,6 @@ class CongregantServiceTypeController extends Controller implements HasMiddlewar
                     'serviceTypes:id,name',
                     'serviceTypesPivot:id,congregant_id,service_type_id,activity_id',
                     'serviceTypesPivot.activity:id,name',
-                    'activities:id,name',
                 ])
                 ->findOrFail($id, [
                     'id',

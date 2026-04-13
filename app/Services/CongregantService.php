@@ -7,8 +7,9 @@ use App\Http\Requests\StoreCongregantRequest;
 use App\Http\Requests\UpdateCongregantRequest;
 use App\Models\Congregant;
 use Illuminate\Http\Request;
-use libphonenumber\PhoneNumberUtil;
+use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 
 class CongregantService
 {
@@ -65,7 +66,6 @@ class CongregantService
         return Congregant::query()
             // ->where('status', 'member')
             ->searchBy($request->all())
-            ->doesntHave('activities')
             ->doesntHave('serviceTypes')
             ->orderBy('full_name')
             ->select([
@@ -77,15 +77,16 @@ class CongregantService
 
     private function normalizePhoneNumber(?string $phoneNumber): ?string
     {
-        if (!$phoneNumber) {
+        if (! $phoneNumber) {
             return null;
         }
 
         try {
             $phoneNumberUtil = PhoneNumberUtil::getInstance();
             $phoneNumberProto = $phoneNumberUtil->parse($phoneNumber, 'ID');
+
             return $phoneNumberUtil->format($phoneNumberProto, PhoneNumberFormat::E164);
-        } catch (\libphonenumber\NumberParseException $e) {
+        } catch (NumberParseException $e) {
             // Log the error or handle it as needed
             return null;
         }
