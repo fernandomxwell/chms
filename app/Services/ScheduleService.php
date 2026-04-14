@@ -174,9 +174,6 @@ class ScheduleService
         bool $isRepeatable
     ) {
         $baseQuery = Congregant::query()
-            // ->whereHas('activities', function ($q) use ($activityId) {
-            //     $q->where('activity_id', $activityId);
-            // })
             ->whereHas('serviceTypesPivot', function ($q) use ($activityId, $serviceTypeId) {
                 $q->where('activity_id', $activityId)
                     ->where('service_type_id', $serviceTypeId);

@@ -8,18 +8,24 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    /**
+     * Display the login view.
+     */
     public function create()
     {
         return view('authentications.login');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(LoginRequest $request)
     {
         $validatedData = $request->validated();
 
         if (Auth::attempt([
-            "email" => $validatedData['email'],
-            "password" => $validatedData['password']
+            'email' => $validatedData['email'],
+            'password' => $validatedData['password'],
         ], $request->boolean('remember'))) {
             $request->session()->regenerate();
 
@@ -33,9 +39,6 @@ class AuthController extends Controller
 
     /**
      * Destroy an authenticated session.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Request $request)
     {

@@ -30,8 +30,7 @@ class CongregantServiceTypeService
                         $query->searchBy($validatedData);
                     });
             }, function (Builder $query) {
-                $query->searchBy([])
-                    ->has('serviceTypes');
+                $query->has('serviceTypes');
             })
             ->select([
                 'id',
@@ -49,10 +48,9 @@ class CongregantServiceTypeService
 
         $congregantId = $validatedData['congregant_id'];
         $canServeConsecutively = $validatedData['can_serve_consecutively'];
-        $activityIds = $validatedData['activity_ids'];
         $serviceTypes = $validatedData['service_types'] ?? [];
 
-        $this->assign($congregantId, $canServeConsecutively, $activityIds, $serviceTypes);
+        $this->assign($congregantId, $canServeConsecutively, $serviceTypes);
     }
 
     public function update(UpdateCongregantServiceTypeRequest $request, int $congregantId)
@@ -60,10 +58,9 @@ class CongregantServiceTypeService
         $validatedData = $request->validated();
 
         $canServeConsecutively = $validatedData['can_serve_consecutively'];
-        $activityIds = $validatedData['activity_ids'];
         $serviceTypes = $validatedData['service_types'] ?? [];
 
-        $this->assign($congregantId, $canServeConsecutively, $activityIds, $serviceTypes);
+        $this->assign($congregantId, $canServeConsecutively, $serviceTypes);
     }
 
     public function delete(int $congregantId)
@@ -72,7 +69,7 @@ class CongregantServiceTypeService
         $congregant->serviceTypes()->detach();
     }
 
-    protected function assign(int $congregantId, bool $canServeConsecutively, array $activityIds, array $serviceTypes): void
+    protected function assign(int $congregantId, bool $canServeConsecutively, array $serviceTypes)
     {
         DB::transaction(function () use ($congregantId, $canServeConsecutively, $serviceTypes) {
             $congregant = Congregant::findOrFail($congregantId, ['id']);

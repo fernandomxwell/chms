@@ -36,7 +36,7 @@ class CongregantService
             ->withQueryString();
     }
 
-    public function create(StoreCongregantRequest $request): Congregant
+    public function create(StoreCongregantRequest $request)
     {
         $data = $request->validated();
         $data['phone_number'] = $this->normalizePhoneNumber($data['phone_number'] ?? null);
@@ -44,7 +44,7 @@ class CongregantService
         return Congregant::create($data);
     }
 
-    public function update(UpdateCongregantRequest $request, int $id): Congregant
+    public function update(UpdateCongregantRequest $request, int $id)
     {
         $congregant = Congregant::findOrFail($id, ['id']);
 
@@ -56,7 +56,7 @@ class CongregantService
         return $congregant;
     }
 
-    public function delete(int $id): void
+    public function delete(int $id)
     {
         Congregant::findOrFail($id, ['id'])->delete();
     }
@@ -75,7 +75,7 @@ class CongregantService
             ->simplePaginate();
     }
 
-    private function normalizePhoneNumber(?string $phoneNumber): ?string
+    private function normalizePhoneNumber(?string $phoneNumber)
     {
         if (! $phoneNumber) {
             return null;
@@ -87,7 +87,7 @@ class CongregantService
 
             return $phoneNumberUtil->format($phoneNumberProto, PhoneNumberFormat::E164);
         } catch (NumberParseException $e) {
-            // Log the error or handle it as needed
+            // [TODO] Log the error or handle it as needed
             return null;
         }
     }

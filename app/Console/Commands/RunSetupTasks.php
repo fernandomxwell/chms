@@ -32,16 +32,36 @@ class RunSetupTasks extends Command
         $this->call('db:seed');
         $this->call('storage:link');
 
-        $this->call('app:create-menu', ['menu' => 'Home']);
-        $this->call('app:create-menu', ['menu' => 'Activities']);
-        $this->call('app:create-menu', ['menu' => 'Congregants']);
-        $this->call('app:create-menu', ['menu' => 'Service Types']);
-        $this->call('app:create-menu', ['menu' => 'Schedule Management']);
-        $this->call('app:create-menu', ['menu' => 'Congregant Services', '--parent' => 'Schedule Management']);
-        $this->call('app:create-menu', ['menu' => 'Schedules', '--parent' => 'Schedule Management']);
+        $this->createMenus();
 
         $this->info('✅ All setup tasks completed successfully!');
 
         return 0;
+    }
+
+    protected function createMenus()
+    {
+        // Register all necessary menus and submenus here
+        $menus = [
+            'Home',
+            'Activities',
+            'Congregants',
+            'Service Types',
+            'Schedule Management' => [
+                'Congregant Services',
+                'Schedules',
+            ],
+        ];
+
+        foreach ($menus as $menu => $submenu) {
+            if (is_array($submenu)) {
+                $this->call('app:create-menu', ['menu' => $menu]);
+                foreach ($submenu as $sub) {
+                    $this->call('app:create-menu', ['menu' => $sub, '--parent' => $menu]);
+                }
+            } else {
+                $this->call('app:create-menu', ['menu' => $submenu]);
+            }
+        }
     }
 }

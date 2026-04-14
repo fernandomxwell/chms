@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 class Congregant extends Model
 {
@@ -52,25 +53,24 @@ class Congregant extends Model
 
     /**
      * Get the date of birth in 'Y-m-d', e.g.: 2025-05-18.
-     *
-     * @return string
      */
-    public function getFormattedDateOfBirthAttribute()
+    public function getFormattedDateOfBirthAttribute(): ?string
     {
         return $this->date_of_birth ? $this->date_of_birth->format('Y-m-d') : null;
     }
 
     /**
      * Get the date of baptism in 'Y-m-d', e.g.: 2025-05-18.
-     *
-     * @return string
      */
-    public function getFormattedDateOfBaptismAttribute()
+    public function getFormattedDateOfBaptismAttribute(): ?string
     {
         return $this->date_of_baptism ? $this->date_of_baptism->format('Y-m-d') : null;
     }
 
-    public function getActivitiesAttribute()
+    /**
+     * Get the activities through service types.
+     */
+    public function getActivitiesAttribute(): Collection
     {
         return $this->serviceTypesPivot()
             ->with('activity')
@@ -83,15 +83,15 @@ class Congregant extends Model
 
     /**
      * Get the serviceTypes.
-     *
-     * @return BelongsToMany
      */
-    public function serviceTypes()
+    public function serviceTypes(): BelongsToMany
     {
-        return $this->belongsToMany(ServiceType::class, 'congregant_activity_service_types')
-            ->withPivot('activity_id');
+        return $this->belongsToMany(ServiceType::class, 'congregant_activity_service_types')->withPivot('activity_id');
     }
 
+    /**
+     * Get the pivot table for congregant, activity, and service type.
+     */
     public function serviceTypesPivot(): HasMany
     {
         return $this->hasMany(CongregantActivityServiceType::class);
@@ -99,10 +99,8 @@ class Congregant extends Model
 
     /**
      * Get the schedules.
-     *
-     * @return BelongsToMany
      */
-    public function schedules()
+    public function schedules(): BelongsToMany
     {
         return $this->belongsToMany(Schedule::class, 'congregant_schedules');
     }

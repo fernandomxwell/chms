@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ScheduleGroup extends Model
 {
@@ -17,12 +19,18 @@ class ScheduleGroup extends Model
         'end_date',
     ];
 
-    public function activity()
+    /**
+     * Get the activity.
+     */
+    public function activity(): BelongsTo
     {
         return $this->belongsTo(Activity::class);
     }
 
-    public function schedules()
+    /**
+     * Get the schedules.
+     */
+    public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class);
     }

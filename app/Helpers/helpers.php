@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Menu;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Request;
 use RRule\RRule;
@@ -7,18 +8,14 @@ use RRule\RRule;
 if (!function_exists('highlightMatch')) {
     /**
      * Highlights a given term in a text.
-     *
-     * @param string $text The text to search in.
-     * @param string $term The term to highlight.
-     * @return string The text with the term highlighted.
      */
-    function highlightMatch($text, $term)
+    function highlightMatch(string $textToSearch, string $termToHighlight): string
     {
-        if (empty($term)) {
-            return $text;
+        if (empty($termToHighlight)) {
+            return $textToSearch;
         }
 
-        return preg_replace('/' . preg_quote($term, '/') . '/i', '<mark>$0</mark>', $text);
+        return preg_replace('/' . preg_quote($termToHighlight, '/') . '/i', '<mark>$0</mark>', $textToSearch);
     }
 }
 
@@ -26,8 +23,7 @@ if (!function_exists('collectRoutePatterns')) {
     /**
      * Recursively collect route patterns from menu and its children.
      *
-     * @param  \App\Models\Menu  $menu
-     * @return array
+     * @param  Menu  $menu
      */
     function collectRoutePatterns($menu): array
     {
@@ -58,12 +54,12 @@ if (!function_exists('isMenuRouteActive')) {
     /**
      * Determine if any route pattern in the menu is active.
      *
-     * @param  \App\Models\Menu  $menu
-     * @return bool
+     * @param  Menu  $menu
      */
     function isMenuRouteActive($menu): bool
     {
         $patterns = collectRoutePatterns($menu);
+
         return Request::routeIs(...$patterns);
     }
 }
@@ -71,11 +67,6 @@ if (!function_exists('isMenuRouteActive')) {
 if (!function_exists('paginatedIndex')) {
     /**
      * Calculate the paginated index.
-     *
-     * @param int $loopIndex The index in the loop.
-     * @param int $currentPage The current page number.
-     * @param int $perPage The number of items per page.
-     * @return int The calculated index.
      */
     function paginatedIndex(int $loopIndex, int $currentPage, int $perPage): int
     {
@@ -86,22 +77,14 @@ if (!function_exists('paginatedIndex')) {
 if (!function_exists('constructRrule')) {
     /**
      * Constructs an RRule string.
-     *
-     * @param string $frequency The frequency of the rule.
-     * @param int $interval The interval of the rule.
-     * @param array|null $byday The days of the week for the rule.
-     * @param string|null $endCondition The end condition of the rule.
-     * @param string|null $until The end date of the rule.
-     * @param int|null $count The number of occurrences of the rule.
-     * @return string The RRule string.
      */
     function constructRrule(
-        string $frequency,
-        int $interval,
-        ?array $byday = null,
-        ?string $endCondition = null,
-        ?string $until = null,
-        ?int $count = null
+        string $frequency, // The frequency of the rule (e.g., DAILY, WEEKLY, MONTHLY, YEARLY)
+        int $interval, // The interval of the rule (e.g., every weeks)
+        ?array $byday = null, // The days of the week for the rule (e.g., ['MO', 'WE', 'FR'])
+        ?string $endCondition = null, // The end condition of the rule (e.g., 'never', 'on_date', 'after_occurrences')
+        ?string $until = null, // The end date of the rule (e.g., '2024-12-31')
+        ?int $count = null // The number of occurrences of the rule (e.g., 10)
     ): string {
         if ($frequency === 'NONE') {
             return '';
@@ -126,9 +109,6 @@ if (!function_exists('constructRrule')) {
 if (!function_exists('parseRrule')) {
     /**
      * Parses an RRule string.
-     *
-     * @param string $rrule The RRule string to parse.
-     * @return array The parsed RRule array.
      */
     function parseRrule(string $rrule): array
     {
@@ -179,14 +159,12 @@ if (!function_exists('parseRrule')) {
 if (!function_exists('generateOccurrences')) {
     /**
      * Generates occurrences based on an RRule.
-     *
-     * @param Carbon $start The start date.
-     * @param string|null $rrule The RRule string.
-     * @param Carbon|null $end The end date.
-     * @return array The array of occurrences.
      */
-    function generateOccurrences(Carbon $start, ?string $rrule, ?Carbon $end = null): array
-    {
+    function generateOccurrences(
+        Carbon $start, // The start date of the event
+        ?string $rrule, // The RRule string defining the recurrence pattern (optional)
+        ?Carbon $end = null // The end date to limit the occurrences (optional)
+    ): array {
         if (!$rrule) {
             return [$start];
         }

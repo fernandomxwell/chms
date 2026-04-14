@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\Models\Searchable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ServiceType extends Model
@@ -41,20 +42,16 @@ class ServiceType extends Model
 
     /**
      * Get the congregants.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function congregants()
+    public function congregants(): BelongsToMany
     {
         return $this->belongsToMany(Congregant::class, 'congregant_service_types');
     }
 
     /**
      * Get the activities.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function activities()
+    public function activities(): BelongsToMany
     {
         return $this->belongsToMany(Activity::class);
     }

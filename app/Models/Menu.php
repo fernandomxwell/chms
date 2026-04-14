@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Menu extends Model
@@ -31,31 +33,24 @@ class Menu extends Model
 
     /**
      * Get the name in snake case.
-     *
-     * @return string
      */
-    public function getNameInSnakeCaseAttribute()
+    public function getNameInSnakeCaseAttribute(): string
     {
         return Str::snake($this->name);
     }
 
     /**
      * Scope a query to only include parent menu.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeParent($query)
+    public function scopeParent(Builder $query): Builder
     {
         return $query->whereNull('parent_id');
     }
 
     /**
      * Get the children menus.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function children()
+    public function children(): HasMany
     {
         return $this->hasMany(Menu::class, 'parent_id')
             ->with('children')

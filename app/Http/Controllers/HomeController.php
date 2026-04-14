@@ -19,6 +19,9 @@ class HomeController extends Controller implements HasMiddleware
         ];
     }
 
+    /**
+     * Display the home page.
+     */
     public function index()
     {
         return view('home');

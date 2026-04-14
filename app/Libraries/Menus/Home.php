@@ -6,14 +6,14 @@ use App\Interfaces\MenuInterface;
 
 class Home implements MenuInterface
 {
-    public function getActions()
+    public function getActions(): ?array
     {
         return [
             'view',
         ];
     }
 
-    public function getOrder()
+    public function getOrder(): int
     {
         return 1;
     }

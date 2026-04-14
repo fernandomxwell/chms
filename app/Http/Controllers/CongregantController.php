@@ -139,6 +139,9 @@ class CongregantController extends Controller implements HasMiddleware
         }
     }
 
+    /**
+     * Handle AJAX request for congregants (e.g., for select2 dropdowns).
+     */
     public function ajax(Request $request)
     {
         try {

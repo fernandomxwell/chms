@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Schedule extends Model
 {
@@ -18,22 +20,34 @@ class Schedule extends Model
         'scheduled_date',
     ];
 
-    public function scheduleGroup()
+    /**
+     * Get the schedule group.
+     */
+    public function scheduleGroup(): BelongsTo
     {
         return $this->belongsTo(ScheduleGroup::class);
     }
 
-    public function congregants()
+    /**
+     * Get the congregants.
+     */
+    public function congregants(): BelongsToMany
     {
         return $this->belongsToMany(Congregant::class, 'congregant_schedules');
     }
 
-    public function activity()
+    /**
+     * Get the activity.
+     */
+    public function activity(): BelongsTo
     {
         return $this->belongsTo(Activity::class);
     }
 
-    public function serviceType()
+    /**
+     * Get the service type.
+     */
+    public function serviceType(): BelongsTo
     {
         return $this->belongsTo(ServiceType::class);
     }

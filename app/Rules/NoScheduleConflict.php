@@ -11,8 +11,11 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class NoScheduleConflict implements ValidationRule
 {
     protected string $startTime;
+
     protected array $recurrenceInput;
+
     protected ?int $excludeId;
+
     protected ActivityService $service;
 
     public function __construct(
@@ -56,6 +59,7 @@ class NoScheduleConflict implements ValidationRule
                 foreach ($existingOccurrences as $existingOcc) {
                     if ($newOcc->equalTo($existingOcc)) {
                         $fail(__('validation.schedule_conflict'));
+
                         return;
                     }
                 }

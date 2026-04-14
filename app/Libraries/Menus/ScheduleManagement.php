@@ -6,12 +6,12 @@ use App\Interfaces\MenuInterface;
 
 class ScheduleManagement implements MenuInterface
 {
-    public function getActions()
+    public function getActions(): ?array
     {
         return null;
     }
 
-    public function getOrder()
+    public function getOrder(): int
     {
         return 5;
     }

@@ -20,8 +20,6 @@ class UpdateCongregantRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -36,6 +34,9 @@ class UpdateCongregantRequest extends FormRequest
         ];
     }
 
+    /**
+     * Get custom error messages for validation rules.
+     */
     public function messages(): array
     {
         return [

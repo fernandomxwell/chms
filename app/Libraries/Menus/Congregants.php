@@ -6,7 +6,7 @@ use App\Interfaces\MenuInterface;
 
 class Congregants implements MenuInterface
 {
-    public function getActions()
+    public function getActions(): ?array
     {
         return [
             'view',
@@ -16,7 +16,7 @@ class Congregants implements MenuInterface
         ];
     }
 
-    public function getOrder()
+    public function getOrder(): int
     {
         return 3;
     }

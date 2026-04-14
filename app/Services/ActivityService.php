@@ -25,7 +25,7 @@ class ActivityService
             ->withQueryString();
     }
 
-    public function create(StoreActivityRequest $request): Activity
+    public function create(StoreActivityRequest $request)
     {
         $data = $request->validated();
         $data['rrule'] = constructRrule(
@@ -54,7 +54,7 @@ class ActivityService
         return Activity::create($data);
     }
 
-    public function update(UpdateActivityRequest $request, int $id): Activity
+    public function update(UpdateActivityRequest $request, int $id)
     {
         $activity = Activity::findOrFail($id, ['id']);
 
@@ -73,7 +73,7 @@ class ActivityService
         return $activity;
     }
 
-    public function delete(int $id): void
+    public function delete(int $id)
     {
         Activity::findOrFail($id, ['id'])->delete();
     }
@@ -89,7 +89,7 @@ class ActivityService
             ->simplePaginate();
     }
 
-    public function generateRruleSummary(array $rruleData): string
+    public function generateRruleSummary(array $rruleData)
     {
         $frequency = $rruleData['frequency'];
         $interval = $rruleData['interval'] ?? 1;
@@ -120,20 +120,20 @@ class ActivityService
                 $days = array_map(fn($day) => $dayMap[$day] ?? $day, $byday);
                 $daysList = implode(', ', $days);
                 $summary .= $interval > 1
-                    ? " " . __('every') . " {$interval} " . __('weeks') . " " . __('on') . " {$daysList}"
-                    : " " . __('every_week_on') . " {$daysList}";
+                    ? ' ' . __('every') . " {$interval} " . __('weeks') . ' ' . __('on') . " {$daysList}"
+                    : ' ' . __('every_week_on') . " {$daysList}";
                 break;
 
             case 'MONTHLY':
                 $summary .= $interval > 1
-                    ? " " . __('every') . " {$interval} " . __('months')
-                    : " " . __('every_month');
+                    ? ' ' . __('every') . " {$interval} " . __('months')
+                    : ' ' . __('every_month');
                 break;
 
             case 'YEARLY':
                 $summary .= $interval > 1
-                    ? " " . __('every') . " {$interval} " . __('years')
-                    : " " . __('every_year');
+                    ? ' ' . __('every') . " {$interval} " . __('years')
+                    : ' ' . __('every_year');
                 break;
 
             default:

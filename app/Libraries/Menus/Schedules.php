@@ -6,7 +6,7 @@ use App\Interfaces\MenuInterface;
 
 class Schedules implements MenuInterface
 {
-    public function getActions()
+    public function getActions(): ?array
     {
         return [
             'view',
@@ -15,7 +15,7 @@ class Schedules implements MenuInterface
         ];
     }
 
-    public function getOrder()
+    public function getOrder(): int
     {
         return 2;
     }

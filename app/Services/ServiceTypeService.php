@@ -35,7 +35,7 @@ class ServiceTypeService
             ->withQueryString();
     }
 
-    public function create(StoreServiceTypeRequest $request): ServiceType
+    public function create(StoreServiceTypeRequest $request)
     {
         $data = $request->validated();
         $activityIds = $data['activities'] ?? [];
@@ -62,7 +62,7 @@ class ServiceTypeService
         return $serviceType;
     }
 
-    public function update(UpdateServiceTypeRequest $request, int $id): ServiceType
+    public function update(UpdateServiceTypeRequest $request, int $id)
     {
         $serviceType = ServiceType::findOrFail($id, ['id']);
 
@@ -78,7 +78,7 @@ class ServiceTypeService
         return $serviceType;
     }
 
-    public function delete(int $id): void
+    public function delete(int $id)
     {
         $serviceType = ServiceType::findOrFail($id, ['id']);
 

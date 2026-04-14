@@ -1,9 +1,11 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow">
     <div class="container-fluid">
         {{-- Sidebar toggle button for small screens --}}
-        <button class="btn d-lg-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        @auth
+            <button class="btn d-lg-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        @endauth
 
         <a class="navbar-brand" href="#">{{ config('app.name') }}</a>
 

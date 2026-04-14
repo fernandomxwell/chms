@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Traits\Models\Searchable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Activity extends Model
@@ -43,20 +45,16 @@ class Activity extends Model
 
     /**
      * Get the schedule groups.
-     *
-     * @return HasMany
      */
-    public function scheduleGroups()
+    public function scheduleGroups(): HasMany
     {
         return $this->hasMany(ScheduleGroup::class);
     }
 
     /**
      * Get the service types.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function serviceTypes()
+    public function serviceTypes(): BelongsToMany
     {
         return $this->belongsToMany(ServiceType::class);
     }

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('css')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+@endsection
+
 @section('content')
     <div class="row my-3">
         <form method="POST" action="{{ route('login') }}">
@@ -21,9 +25,14 @@
 
                 <div class="mb-3">
                     <label for="password" class="form-label">{{ __('password') }}</label>
-                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required autocomplete='current-password'></input>
+                    <div class="input-group">
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required autocomplete="current-password">
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                            <i class="bi bi-eye-slash" id="toggle-icon"></i>
+                        </button>
+                    </div>
 
-                    @error('email')
+                    @error('password')
                     <div class="invalid-feedback">
                         {{ $errors->first('password') }}
                     </div>
@@ -51,4 +60,22 @@
             </div>
         </form>
     </div>
+@endsection
+
+@section('javascript')
+<script>
+    function togglePassword() {
+        const password = document.getElementById('password');
+        const icon = document.getElementById('toggle-icon');
+        if (password.type === 'password') {
+            password.type = 'text';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        } else {
+            password.type = 'password';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        }
+    }
+</script>
 @endsection
