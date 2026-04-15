@@ -27,7 +27,7 @@ class RunSetupTasks extends Command
     {
         $this->info('🚀 Starting application setup...');
 
-        $this->call('key:generate');
+        // $this->call('key:generate');
         $this->call('migrate');
         $this->call('db:seed');
         $this->call('storage:link');
