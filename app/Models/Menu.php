@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 
 class Menu extends Model
@@ -40,6 +42,18 @@ class Menu extends Model
     }
 
     /**
+     * Get translated name from route name.
+     */
+    public function getTranslatedNameAttribute(): string
+    {
+        if (!empty($this->link) && Lang::has("{$this->link}")) {
+            return __("{$this->link}");
+        }
+
+        return __("{$this->name_in_snake_case}.index");
+    }
+
+    /**
      * Scope a query to only include parent menu.
      */
     public function scopeParent(Builder $query): Builder
@@ -54,6 +68,21 @@ class Menu extends Model
     {
         return $this->hasMany(Menu::class, 'parent_id')
             ->with('children')
+            ->select([
+                'id',
+                'parent_id',
+                'name',
+                'link',
+            ]);
+    }
+
+    /**
+     * Get the parent menu.
+     */
+    public function parents(): BelongsTo
+    {
+        return $this->belongsTo(Menu::class, 'parent_id')
+            ->with('parents')
             ->select([
                 'id',
                 'parent_id',

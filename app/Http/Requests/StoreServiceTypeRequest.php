@@ -32,4 +32,16 @@ class StoreServiceTypeRequest extends FormRequest
             'activities.*' => 'integer|exists:activities,id',
         ];
     }
+
+    /**
+     * Customize the validation attribute names that apply to the request.
+     */
+    public function attributes()
+    {
+        return [
+            'name' => __('name'),
+            'description' => __('description'),
+            'activities' => __('service_types.select_activities'),
+        ];
+    }
 }

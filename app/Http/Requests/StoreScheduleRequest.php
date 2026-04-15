@@ -30,4 +30,16 @@ class StoreScheduleRequest extends FormRequest
             'service_types.*.is_repeatable' => 'nullable|boolean',
         ];
     }
+
+    /**
+     * Customize the validation attribute names that apply to the request.
+     */
+    public function attributes()
+    {
+        return [
+            'activity_id' => __('activities.index'),
+            'start_date' => __('start_date'),
+            'end_date' => __('end_date'),
+        ];
+    }
 }

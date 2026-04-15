@@ -28,4 +28,16 @@ class IndexCongregantRequest extends FormRequest
             'gender' => ['nullable', new Enum(Gender::class)],
         ];
     }
+
+    /**
+     * Customize the validation attribute names that apply to the request.
+     */
+    public function attributes()
+    {
+        return [
+            'search' => __('search'),
+            'status' => __('status'),
+            'gender' => __('gender'),
+        ];
+    }
 }

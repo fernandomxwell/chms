@@ -79,7 +79,7 @@
                                     @foreach($serviceTypes->filter(fn($st) => $st->activities->contains('id', $activity->id)) as $serviceType)
                                         <div class="col-md-3">
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input @error('service_types.' . $activity->id) is-invalid @enderror" type="checkbox" name="service_types[{{ $activity->id }}][]" value="{{ $serviceType->id }}" {{ old('service_types.' . $activity->id) !== null ? (in_array($serviceType->id, old('service_types.' . $activity->id)) ? 'checked' : '') : '' }}>
+                                                <input class="form-check-input @error('service_types') is-invalid @enderror" type="checkbox" name="service_types[{{ $activity->id }}][]" value="{{ $serviceType->id }}" {{ old('service_types.' . $activity->id) !== null ? (in_array($serviceType->id, old('service_types.' . $activity->id)) ? 'checked' : '') : '' }}>
                                                 <label class="form-check-label" for="{{ $serviceType->name }}">{{ $serviceType->name }}</label>
                                             </div>
                                         </div>
@@ -89,6 +89,9 @@
                         @endforeach
 
                         @error('service_types')
+                            <div class="small text-danger">{{ $message }}</div>
+                        @enderror
+                        @error('service_types.*')
                             <div class="small text-danger">{{ $message }}</div>
                         @enderror
                     </div>

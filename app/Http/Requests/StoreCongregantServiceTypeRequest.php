@@ -29,4 +29,17 @@ class StoreCongregantServiceTypeRequest extends FormRequest
             'can_serve_consecutively' => 'required|boolean',
         ];
     }
+
+    /**
+     * Customize the validation attribute names that apply to the request.
+     */
+    public function attributes()
+    {
+        return [
+            'congregant_id' => __('congregants.index'),
+            'activity_ids' => __('activities.index'),
+            'service_types' => __('service_types.index'),
+            'can_serve_consecutively' => __('willing_to_serve'),
+        ];
+    }
 }

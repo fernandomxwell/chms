@@ -10,22 +10,34 @@
         <a class="navbar-brand" href="#">{{ config('app.name') }}</a>
 
         @auth
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse" id="topbarMenu">
                 <ul class="navbar-nav navbar-expand-lg ms-auto sticky-top">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">{{ strtok(Auth::user()->name, ' ') }}</a>
-                    </li>
-                    <div class="vr d-none d-lg-block"></div>
-                    <li class="nav-item">
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button class="nav-link" type="submit">
-                                {{ __('auth.logout') }}
-                            </button>
-                        </form>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="topbarProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ strtok(Auth::user()->name, ' ') }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="topbarProfileDropdown">
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button class="dropdown-item" type="submit">
+                                        {{ __('auth.logout') }}
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>
         @endauth
     </div>
 </nav>
+
+@section('javascript')
+    <script>
+        const dropdownElement = document.getElementById('topbarProfileDropdown');
+        dropdownElement.addEventListener('shown.bs.dropdown', function () {
+            this.setAttribute('aria-expanded', 'false');
+        });
+    </script>
+@endsection

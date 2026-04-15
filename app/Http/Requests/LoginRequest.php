@@ -32,4 +32,15 @@ class LoginRequest extends FormRequest
             ],
         ];
     }
+
+    /**
+     * Customize the validation attribute names that apply to the request.
+     */
+    public function attributes()
+    {
+        return [
+            'email' => __('email'),
+            'password' => __('password'),
+        ];
+    }
 }

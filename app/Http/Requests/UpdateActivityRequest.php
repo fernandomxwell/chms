@@ -58,4 +58,22 @@ class UpdateActivityRequest extends FormRequest
             ],
         ];
     }
+
+    /**
+     * Customize the validation attribute names that apply to the request.
+     */
+    public function attributes()
+    {
+        return [
+            'name' => __('name'),
+            'description' => __('description'),
+            'frequency' => __('frequency'),
+            'interval' => __('interval'),
+            'byday' => __('days'),
+            'end_condition' => __('end_condition'),
+            'until' => __('until'),
+            'count' => __('count'),
+            'start_time' => __('start_time'),
+        ];
+    }
 }

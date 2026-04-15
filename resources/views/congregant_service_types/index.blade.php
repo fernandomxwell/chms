@@ -28,8 +28,8 @@
                 <tr>
                     <th class="text-nowrap">@lang('No')</th>
                     <th class="text-nowrap">@lang('full_name')</th>
-                    <th class="text-nowrap">@lang('activities.index')</th>
-                    <th class="text-nowrap">@lang('notes')</th>
+                    <th class="text-nowrap" style="min-width: 200px">@lang('activities.index')</th>
+                    <th class="text-nowrap" style="min-width: 200px">@lang('notes')</th>
                     <th class="text-nowrap">@lang('actions')</th>
                 </tr>
             </thead>

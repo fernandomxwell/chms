@@ -24,6 +24,7 @@
 
                 <main class="col-md-9 ms-sm-auto col-lg-10 px-md py-3 overflow-auto">
                     <div class="container">
+                        @include('layouts.breadcrumb')
                         @yield('content')
                         @include('layouts.footer')
                     </div>

@@ -9,7 +9,7 @@ if (!function_exists('highlightMatch')) {
     /**
      * Highlights a given term in a text.
      */
-    function highlightMatch(string $textToSearch, string $termToHighlight): string
+    function highlightMatch(?string $textToSearch, ?string $termToHighlight): ?string
     {
         if (empty($termToHighlight)) {
             return $textToSearch;

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middleware\GetMenu;
+use App\Http\Middleware\GetNavigation;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'menu' => GetMenu::class,
+            'navigation' => GetNavigation::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

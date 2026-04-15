@@ -27,7 +27,7 @@
             <thead class="align-middle table-light">
                 <tr>
                     <th class="text-nowrap">@lang('No')</th>
-                    <th class="text-nowrap">@lang('name')</th>
+                    <th class="text-nowrap" style="min-width: 150px">@lang('name')</th>
                     <th class="text-nowrap">@lang('activities.index')</th>
                     <th class="text-nowrap">@lang('actions')</th>
                 </tr>

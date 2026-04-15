@@ -23,4 +23,14 @@ class IndexServiceTypeRequest extends FormRequest
             'search' => 'nullable|string|max:100',
         ];
     }
+
+    /**
+     * Customize the validation attribute names that apply to the request.
+     */
+    public function attributes()
+    {
+        return [
+            'search' => __('search')
+        ];
+    }
 }

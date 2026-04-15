@@ -43,4 +43,20 @@ class UpdateCongregantRequest extends FormRequest
             'phone_number.regex' => __('validation.phone_number_regex'),
         ];
     }
+
+    /**
+     * Customize the validation attribute names that apply to the request.
+     */
+    public function attributes()
+    {
+        return [
+            'full_name' => __('full_name'),
+            'gender' => __('gender'),
+            'date_of_birth' => __('date_of_birth'),
+            'phone_number' => __('phone_number'),
+            'email' => __('email'),
+            'date_of_baptism' => __('date_of_baptism'),
+            'status' => __('status'),
+        ];
+    }
 }

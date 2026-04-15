@@ -25,7 +25,7 @@ class CongregantServiceTypeController extends Controller implements HasMiddlewar
     public static function middleware(): array
     {
         return [
-            new Middleware('menu', only: [
+            new Middleware('navigation', only: [
                 'index',
                 'create',
                 'edit',
