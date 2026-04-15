@@ -36,5 +36,5 @@ Tests use SQLite in-memory (configured in phpunit.xml). Run individual tests: `.
 ## Notes
 
 - Default locale is Indonesian (`id`) - check `lang/id.json`
-- Telescope enabled locally for debugging
+- Telescope enabled locally by default (`TELESCOPE_ENABLED=true` in .env to enable)
 - Queue uses database driver

@@ -1,54 +1,31 @@
-# Production Stage
-FROM php:8.2-fpm-alpine AS builder
+# Stage 1: Composer dependencies only
+FROM php:8.4-alpine AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN apk add --no-cache git unzip libzip-dev \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 
+# Stage 2: Final Production Image
+FROM php:8.4-alpine
 WORKDIR /var/www/html
 
-RUN apk add --no-cache \
-    composer \
-    nodejs \
-    npm \
-    git \
-    zip \
-    unzip \
-    libzip-dev \
-    oniguruma-dev \
-    mysql-client
+# Install PHP extensions
+RUN apk add --no-cache libpng-dev libzip-dev icu-dev oniguruma-dev \
+    && curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o /usr/local/bin/install-php-extensions \
+    && chmod +x /usr/local/bin/install-php-extensions \
+    && install-php-extensions pdo_mysql mbstring zip exif pcntl bcmath gd intl opcache redis
 
-RUN docker-php-ext-configure zip && \
-    docker-php-ext-install -j$(nproc) \
-    pdo \
-    pdo_mysql \
-    opcache \
-    zip
-
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
+# Copy vendor from Stage 1
+COPY --from=vendor /app/vendor ./vendor
+# Copy application code
 COPY . .
 
-RUN composer install --optimize-autoloader --no-dev --no-interaction
+# Finalize Laravel
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && composer dump-autoload --optimize --no-dev --classmap-authoritative \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-RUN npm ci --production && npm run build
-
-# Production Stage
-FROM php:8.2-fpm-alpine AS production
-
-WORKDIR /var/www/html
-
-RUN apk add --no-cache \
-    libzip \
-    oniguruma \
-    mysql-client \
-    nginx
-
-COPY --from=builder /var/www/html /var/www/html
-
-RUN chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
-
-RUN echo "<?php return ['enabled' => true, 'driver' => 'file', 'path' => '../storage/framework/views'];" > /var/www/html/bootstrap/cache/views.php
-
-COPY nginx.conf /etc/nginx/http.d/default.conf
-
-EXPOSE 8080
-
-CMD ["php-fpm"]
+USER www-data
+ENTRYPOINT ["php", "artisan", "octane:start", "--host=0.0.0.0", "--port=8000"]
