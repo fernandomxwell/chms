@@ -27,5 +27,17 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+# Copy the entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Set permissions for Laravel
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Switch to the non-root user
 USER www-data
-ENTRYPOINT ["php", "artisan", "octane:start", "--host=0.0.0.0", "--port=8000"]
+
+# Define the entrypoint
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+CMD ["php", "artisan", "octane:start", "--host=0.0.0.0", "--port=8000"]
