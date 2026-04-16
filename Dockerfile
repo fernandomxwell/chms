@@ -23,7 +23,7 @@ COPY . .
 
 # Finalize Laravel
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && composer dump-autoload --optimize --no-dev --classmap-authoritative \
+    && composer dump-autoload --optimize --no-dev --classmap-authoritative --no-scripts \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
