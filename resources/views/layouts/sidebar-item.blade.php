@@ -1,21 +1,25 @@
-@php
-    $active = isMenuRouteActive($menu);
-@endphp
+@php $active = isMenuRouteActive($menu); @endphp
 
-<li class="nav-item">
+<li class="sidebar-nav-item">
     @if ($menu->children->isEmpty())
-        <a class="nav-link text-nowrap {{ $active ? 'text-dark' : 'text-muted' }}" href="{{ route($menu->link) }}">
+        <a class="sidebar-nav-link {{ $active ? 'active' : '' }}"
+            href="{{ route($menu->link) }}">
             @lang($menu->name_in_snake_case . '.index')
         </a>
     @else
-        <a class="nav-link text-nowrap {{ $active ? 'text-dark' : 'collapsed text-muted' }}" data-bs-toggle="collapse"
-            href="#collapseDropdown{{ $menu->id }}" role="button" aria-expanded="{{ $active ? 'true' : 'false' }}"
-            aria-controls="collapseDropdown{{ $menu->id }}">
-            @lang($menu->name_in_snake_case . '.index')
+        <a class="sidebar-group-toggle {{ $active ? 'active' : '' }}"
+            data-bs-toggle="collapse"
+            href="#sidebarGroup{{ $menu->id }}"
+            role="button"
+            aria-expanded="{{ $active ? 'true' : 'false' }}"
+            aria-controls="sidebarGroup{{ $menu->id }}">
+            <span>@lang($menu->name_in_snake_case . '.index')</span>
+            <i class="bi bi-chevron-right toggle-arrow"></i>
         </a>
 
-        <div class="collapse ps-3 {{ $active ? 'show' : '' }}" id="collapseDropdown{{ $menu->id }}">
-            <ul class="nav flex-column">
+        <div class="collapse sidebar-children {{ $active ? 'show' : '' }}"
+            id="sidebarGroup{{ $menu->id }}">
+            <ul class="sidebar-nav">
                 @foreach ($menu->children as $child)
                     @include('layouts.sidebar-item', ['menu' => $child])
                 @endforeach

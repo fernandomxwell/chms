@@ -1,18 +1,24 @@
 {{-- Params: $bulkDeleteConfirmText (string) --}}
 
 <div class="modal fade" id="bulkDeleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@lang('confirm_delete')</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-trash3 text-danger me-2"></i>@lang('confirm_delete')
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-secondary">
                 {{ $bulkDeleteConfirmText }}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('cancel')</button>
-                <button type="submit" form="bulk-form" class="btn btn-danger">@lang('delete')</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    @lang('cancel')
+                </button>
+                <button type="submit" form="bulk-form" class="btn btn-danger">
+                    <i class="bi bi-trash3 me-1"></i>@lang('delete')
+                </button>
             </div>
         </div>
     </div>

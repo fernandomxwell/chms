@@ -1,4 +1,13 @@
-# Stage 1: Composer dependencies only
+# Stage 1: Frontend assets
+FROM node:22-alpine AS frontend
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci --prefer-offline
+COPY vite.config.js ./
+COPY resources/ ./resources/
+RUN npm run build
+
+# Stage 2: Composer dependencies only
 FROM php:8.4-alpine AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
@@ -6,7 +15,7 @@ RUN apk add --no-cache git unzip libzip-dev \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 
-# Stage 2: Final Production Image
+# Stage 3: Final Production Image
 FROM php:8.4-alpine
 WORKDIR /var/www/html
 
@@ -16,10 +25,12 @@ RUN apk add --no-cache libpng-dev libzip-dev icu-dev oniguruma-dev \
     && chmod +x /usr/local/bin/install-php-extensions \
     && install-php-extensions pdo_mysql mbstring zip exif pcntl bcmath gd intl opcache redis swoole
 
-# Copy vendor from Stage 1
+# Copy vendor from Stage 2
 COPY --chown=www-data:www-data --from=vendor /app/vendor ./vendor
 # Copy application code
 COPY --chown=www-data:www-data . .
+# Overwrite with freshly built frontend assets from Stage 1
+COPY --chown=www-data:www-data --from=frontend /app/public/build ./public/build
 
 # Finalize Laravel
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \

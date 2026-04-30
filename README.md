@@ -7,6 +7,7 @@
 ### 1. Technology Stacks
 - PHP >= 8.2 (https://www.php.net/downloads.php)
 - MySQL
+- Node.js >= 18 (https://nodejs.org/) — required for building frontend assets
 - Composer 2.x (https://getcomposer.org/)
 - Other server requirements (https://laravel.com/docs/12.x/deployment#server-requirements)
 
@@ -25,6 +26,8 @@
 - git clone
 - Copy `.env.example` to `.env`, set it your own
 - Run `composer install`
+- Run `npm install`
+- Run `npm run build`
 - Run `php artisan app:setup`
 
 [**Back to contents**](#contents)
@@ -33,6 +36,12 @@
 - git pull
 - Run `composer install`
 - Run `composer dump-autoload`
+- Run `npm install`
+- Run `npm run build`
 - Run `php artisan migrate`
+
+> **Note:** `npm install` and `npm run build` compile the CSS and JS assets into `public/build/`.
+> These steps are required whenever frontend files under `resources/` change.
+> When building with Docker, this is handled automatically by the frontend build stage in the `Dockerfile`.
 
 [**Back to contents**](#contents)

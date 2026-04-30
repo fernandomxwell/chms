@@ -1,7 +1,3 @@
-<footer class="sticky-footer bg-white">
-    <div class="container my-auto">
-        <div class="copyright text-center my-auto">
-            &copy; {{ config('app.name') }} {{ date('Y') }}</span>
-        </div>
-    </div>
+<footer class="app-footer">
+    &copy; {{ config('app.name') }} {{ date('Y') }}
 </footer>
