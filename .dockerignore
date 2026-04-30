@@ -32,9 +32,6 @@ bootstrap/cache/*
 tests
 .editorconfig
 .phpunit.xml
-vite.config.js
-package.json
-package-lock.json
 
 *.md
 LICENSE
