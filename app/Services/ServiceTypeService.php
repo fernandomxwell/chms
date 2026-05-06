@@ -192,6 +192,7 @@ class ServiceTypeService
         $failed = 0;
         $errors = [];
         $row = 1;
+        $maxSortOrder = ServiceType::max('sort_order') ?? 0;
 
         while (($values = fgetcsv($handle)) !== false) {
             $row++;
@@ -235,18 +236,23 @@ class ServiceTypeService
                 }
             }
 
-            DB::transaction(function () use ($data, $activityIds) {
+            DB::transaction(function () use ($data, $activityIds, &$maxSortOrder) {
                 $serviceType = ServiceType::withTrashed()->where('name', $data['name'])->first();
 
                 if ($serviceType) {
                     if ($serviceType->trashed()) {
                         $serviceType->restore();
+                        if (! $serviceType->sort_order) {
+                            $serviceType->sort_order = ++$maxSortOrder;
+                            $serviceType->save();
+                        }
                     }
                     $serviceType->fill(['description' => $data['description']])->save();
                 } else {
                     $serviceType = ServiceType::create([
                         'name'        => $data['name'],
                         'description' => $data['description'],
+                        'sort_order'  => ++$maxSortOrder,
                     ]);
                 }
 
