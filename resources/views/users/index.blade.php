@@ -7,7 +7,9 @@
     @include('layouts.success')
 
     <div class="d-flex flex-wrap gap-2 mb-2">
-        <a class="btn btn-primary" href="{{ route('users.create') }}">@lang('users.create')</a>
+        @can('users.create')
+            <a class="btn btn-primary" href="{{ route('users.create') }}">@lang('users.create')</a>
+        @endif
     </div>
 
     <form action="{{ route('users.index') }}" method="GET">
@@ -35,6 +37,7 @@
                     <th class="text-nowrap">@lang('No')</th>
                     <th class="text-nowrap">@lang('name')</th>
                     <th class="text-nowrap">@lang('email')</th>
+                    <th class="text-nowrap">@lang('roles.index')</th>
                     <th class="text-nowrap">@lang('created_at')</th>
                     <th class="text-nowrap">@lang('actions')</th>
                 </tr>
@@ -45,20 +48,23 @@
                     <td>{{ paginatedIndex($index + 1, $users->currentPage(), $users->perPage()) }}</td>
                     <td>{!! highlightMatch($user->name, request('search')) !!}</td>
                     <td>{!! highlightMatch($user->email, request('search')) !!}</td>
+                    <td>{{ $user->role?->name ?? '-' }}</td>
                     <td class="text-nowrap">{{ $user->created_at->format('d M Y') }}</td>
                     <td class="text-nowrap">
                         @if ($user->id !== auth()->id())
-                            <button type="button" class="btn btn-danger mb-1"
-                                data-bs-toggle="modal"
-                                data-bs-target="#deleteModal{{ $user->id }}">
-                                @lang('delete')
-                            </button>
+                            @can('users.delete')
+                                <button type="button" class="btn btn-danger mb-1"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal{{ $user->id }}">
+                                    @lang('delete')
+                                </button>
+                            @endcan
                         @endif
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center">@lang('no_records_found')</td>
+                    <td colspan="6" class="text-center">@lang('no_records_found')</td>
                 </tr>
             @endforelse
             </tbody>
@@ -66,6 +72,7 @@
         {!! $users->links() !!}
     </div>
 
+    @can('users.delete')
     @foreach ($users as $user)
         <div class="modal fade" id="deleteModal{{ $user->id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ $user->id }}" aria-hidden="true">
             <div class="modal-dialog">
@@ -89,4 +96,5 @@
             </div>
         </div>
     @endforeach
+    @endif
 @endsection

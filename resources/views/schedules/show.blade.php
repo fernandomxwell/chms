@@ -26,5 +26,10 @@
         </table>
     </div>
 
-    <a class="btn btn-secondary" href="{{ url()->previous() }}">@lang('back')</a>
+    <div class="d-flex gap-2 mt-2">
+        @can('schedules.view')
+            <a href="{{ route('schedules.export', $scheduleGroupId) }}" class="btn btn-warning">@lang('export')</a>
+        @endif
+        <a class="btn btn-secondary" href="{{ url()->previous() }}">@lang('back')</a>
+    </div>
 @endsection

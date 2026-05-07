@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -33,6 +34,11 @@ class AppServiceProvider extends ServiceProvider
         $this->specifyPasswordValidationRules();
 
         Paginator::useBootstrapFive();
+
+        Gate::before(function ($user, string $ability) {
+            $permissions = $user->role?->permissions ?? [];
+            return in_array($ability, $permissions) ?: null;
+        });
     }
 
     /**

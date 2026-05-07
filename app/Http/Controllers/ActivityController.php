@@ -26,12 +26,11 @@ class ActivityController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('navigation', only: [
-                'index',
-                'create',
-                'show',
-                'edit',
-            ]),
+            new Middleware('can:activities.view', only: ['index', 'show', 'ajax']),
+            new Middleware('can:activities.create', only: ['create', 'store']),
+            new Middleware('can:activities.edit', only: ['edit', 'update', 'reorder']),
+            new Middleware('can:activities.delete', only: ['destroy', 'bulkDestroy']),
+            new Middleware('navigation', only: ['index', 'create', 'show', 'edit']),
         ];
     }
 

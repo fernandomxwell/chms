@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Requests\IndexUserRequest;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\Role;
 use App\Models\User;
 use App\Notifications\NewUserCredentials;
 use Illuminate\Support\Str;
@@ -15,15 +16,22 @@ class UserService
         $validatedData = $request->validated();
 
         return User::searchBy($validatedData)
+            ->with('role:id,name')
             ->select([
                 'id',
+                'role_id',
                 'name',
                 'email',
                 'created_at',
             ])
-            ->latest()
+            ->orderByDesc('id')
             ->paginate()
             ->withQueryString();
+    }
+
+    public function getRoles()
+    {
+        return Role::orderBy('name')->get(['id', 'name']);
     }
 
     public function create(StoreUserRequest $request): User

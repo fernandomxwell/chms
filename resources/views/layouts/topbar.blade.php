@@ -6,9 +6,9 @@
         <i class="bi bi-list" style="font-size:1.125rem;"></i>
     </button>
 
-    <a class="app-topbar-brand d-lg-none" href="{{ route('home.index') }}">
+    {{-- <a class="app-topbar-brand d-lg-none" href="{{ route('home.index') }}">
         {{ config('app.name') }}
-    </a>
+    </a> --}}
 
     <div class="app-topbar-spacer"></div>
 

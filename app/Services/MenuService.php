@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Interfaces\MenuInterface;
 use App\Models\Menu;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class MenuService
@@ -63,5 +64,14 @@ class MenuService
         $data = $this->prepareData($menu, $order, $parent, $actions);
 
         Menu::updateOrCreate($conditions, $data);
+
+        if (!empty($actions) && property_exists($service, 'allowedDefaultRoles')) {
+            $fullActions = $data['actions'];
+            foreach ($service->allowedDefaultRoles as $roleName) {
+                (new RoleService())->addPermissions($roleName, $fullActions);
+            }
+        }
+
+        Cache::forget('menus');
     }
 }

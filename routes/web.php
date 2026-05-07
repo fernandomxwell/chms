@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ServiceTypesController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,8 @@ Route::middleware(['auth'])
         Route::resource('schedules', ScheduleController::class)->except(['edit', 'update']);
 
         Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'destroy']);
+
+        Route::resource('roles', RoleController::class)->except(['show']);
 
         Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 

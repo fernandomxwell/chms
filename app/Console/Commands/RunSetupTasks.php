@@ -53,6 +53,7 @@ class RunSetupTasks extends Command
             ],
             'Settings' => [
                 'Users',
+                'Roles',
             ],
         ];
 

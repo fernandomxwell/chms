@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,11 +17,16 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         try {
-            User::create([
-                'name' => 'Fernando',
-                'email' => 'fernandomxwell@gmail.com',
-                'password' => bcrypt('Admin123!'),
-            ]);
+            $superAdmin = Role::firstOrCreate(['name' => 'super admin']);
+
+            User::firstOrCreate(
+                ['email' => 'fernandomxwell@gmail.com'],
+                [
+                    'name' => 'Fernando',
+                    'password' => bcrypt('Admin123!'),
+                    'role_id' => $superAdmin->id,
+                ]
+            );
         } catch (\Exception $e) {
             echo "ERROR " . $e->getMessage();
         }

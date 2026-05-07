@@ -26,14 +26,11 @@ class CongregantController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('navigation', only: [
-                'index',
-                'create',
-                'show',
-                'edit',
-                'importForm',
-                'import',
-            ]),
+            new Middleware('can:congregants.view', only: ['index', 'show', 'export', 'downloadTemplate', 'ajax']),
+            new Middleware('can:congregants.create', only: ['create', 'store', 'importForm', 'import']),
+            new Middleware('can:congregants.edit', only: ['edit', 'update']),
+            new Middleware('can:congregants.delete', only: ['destroy', 'bulkDestroy']),
+            new Middleware('navigation', only: ['index', 'create', 'show', 'edit', 'importForm', 'import']),
         ];
     }
 

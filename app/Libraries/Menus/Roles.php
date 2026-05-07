@@ -4,9 +4,9 @@ namespace App\Libraries\Menus;
 
 use App\Interfaces\MenuInterface;
 
-class ServiceTypes implements MenuInterface
+class Roles implements MenuInterface
 {
-    public array $allowedDefaultRoles = ['super admin', 'admin'];
+    public array $allowedDefaultRoles = ['super admin'];
 
     public function getActions(): ?array
     {
@@ -20,6 +20,6 @@ class ServiceTypes implements MenuInterface
 
     public function getOrder(): int
     {
-        return 4;
+        return 2;
     }
 }

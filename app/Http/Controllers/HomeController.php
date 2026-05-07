@@ -13,9 +13,8 @@ class HomeController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('navigation', only: [
-                'index',
-            ]),
+            new Middleware('can:home.view', only: ['index']),
+            new Middleware('navigation', only: ['index']),
         ];
     }
 

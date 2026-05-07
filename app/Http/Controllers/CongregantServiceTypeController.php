@@ -27,13 +27,11 @@ class CongregantServiceTypeController extends Controller implements HasMiddlewar
     public static function middleware(): array
     {
         return [
-            new Middleware('navigation', only: [
-                'index',
-                'create',
-                'edit',
-                'importForm',
-                'import',
-            ]),
+            new Middleware('can:congregant_services.view', only: ['index', 'export', 'downloadTemplate']),
+            new Middleware('can:congregant_services.create', only: ['create', 'store', 'importForm', 'import']),
+            new Middleware('can:congregant_services.edit', only: ['edit', 'update']),
+            new Middleware('can:congregant_services.delete', only: ['destroy', 'bulkDestroy']),
+            new Middleware('navigation', only: ['index', 'create', 'edit', 'importForm', 'import']),
         ];
     }
 

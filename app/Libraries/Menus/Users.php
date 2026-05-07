@@ -6,6 +6,8 @@ use App\Interfaces\MenuInterface;
 
 class Users implements MenuInterface
 {
+    public array $allowedDefaultRoles = ['super admin', 'admin'];
+
     public function getActions(): ?array
     {
         return [

@@ -19,10 +19,10 @@ class UserController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('navigation', only: [
-                'index',
-                'create'
-            ]),
+            new Middleware('can:users.view', only: ['index']),
+            new Middleware('can:users.create', only: ['create', 'store']),
+            new Middleware('can:users.delete', only: ['destroy']),
+            new Middleware('navigation', only: ['index', 'create']),
         ];
     }
 
@@ -40,7 +40,9 @@ class UserController extends Controller implements HasMiddleware
     public function create()
     {
         try {
-            return view('users.create');
+            $roles = $this->userService->getRoles();
+
+            return view('users.create', compact('roles'));
         } catch (\Exception $e) {
             return $this->handleException($e, 'users.index');
         }

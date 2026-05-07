@@ -26,11 +26,10 @@ class ScheduleController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('navigation', only: [
-                'index',
-                'create',
-                'show',
-            ]),
+            new Middleware('can:schedules.view', only: ['index', 'show', 'export']),
+            new Middleware('can:schedules.create', only: ['create', 'store']),
+            new Middleware('can:schedules.delete', only: ['destroy', 'bulkDestroy']),
+            new Middleware('navigation', only: ['index', 'create', 'show']),
         ];
     }
 
@@ -101,7 +100,7 @@ class ScheduleController extends Controller implements HasMiddleware
         try {
             $scheduleGroup = $this->scheduleService->show($id);
 
-            return view('schedules.show', $scheduleGroup);
+            return view('schedules.show', array_merge($scheduleGroup, ['scheduleGroupId' => $id]));
         } catch (\Exception $e) {
             return $this->handleException($e, 'schedules.index');
         }

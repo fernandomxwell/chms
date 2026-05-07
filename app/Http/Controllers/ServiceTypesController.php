@@ -27,14 +27,11 @@ class ServiceTypesController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('navigation', only: [
-                'index',
-                'create',
-                'show',
-                'edit',
-                'importForm',
-                'import',
-            ]),
+            new Middleware('can:service_types.view', only: ['index', 'show', 'export', 'downloadTemplate']),
+            new Middleware('can:service_types.create', only: ['create', 'store', 'importForm', 'import']),
+            new Middleware('can:service_types.edit', only: ['edit', 'update', 'reorder']),
+            new Middleware('can:service_types.delete', only: ['destroy', 'bulkDestroy']),
+            new Middleware('navigation', only: ['index', 'create', 'show', 'edit', 'importForm', 'import']),
         ];
     }
 

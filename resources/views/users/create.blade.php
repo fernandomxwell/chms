@@ -39,6 +39,23 @@
             @enderror
         </div>
 
+        <div class="mb-3">
+            <label for="role_id" class="form-label">@lang('roles.index'):</label>
+            <select id="role_id"
+                name="role_id"
+                class="form-select @error('role_id') is-invalid @enderror">
+                <option value="">— @lang('roles.no_role') —</option>
+                @foreach ($roles as $role)
+                    <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
+                        {{ $role->name }}
+                    </option>
+                @endforeach
+            </select>
+            @error('role_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
         <div class="alert alert-info">
             <i class="bi bi-info-circle me-2"></i>@lang('users.password_auto_generated')
         </div>

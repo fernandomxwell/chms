@@ -7,11 +7,15 @@
     @include('layouts.success')
 
     <div class="d-flex flex-wrap gap-2 mb-2">
-        <a class="btn btn-primary" href="{{ route('schedules.create') }}">@lang('schedules.create')</a>
-        <button type="button" id="bulk-delete-btn" class="btn btn-danger" disabled
-            form="bulk-form" data-bs-toggle="modal" data-bs-target="#bulkDeleteModal">
-            @lang('bulk_delete') (<span id="bulk-selected-count">0</span>)
-        </button>
+        @can('schedules.create')
+            <a class="btn btn-primary" href="{{ route('schedules.create') }}">@lang('schedules.create')</a>
+        @endif
+        @can('schedules.delete')
+            <button type="button" id="bulk-delete-btn" class="btn btn-danger" disabled
+                form="bulk-form" data-bs-toggle="modal" data-bs-target="#bulkDeleteModal">
+                @lang('bulk_delete') (<span id="bulk-selected-count">0</span>)
+            </button>
+        @endif
     </div>
 
     <form action="{{ route('schedules.index') }}" method="GET">
@@ -56,8 +60,12 @@
                         <td>{{ $scheduleGroup->end_date }}</td>
                         <td class="text-nowrap">
                             <a class="btn btn-info text-light mr-1 mb-1" href="{{ route('schedules.show',$scheduleGroup->id) }}">@lang('show')</a>
-                            <a href="{{ route('schedules.export', $scheduleGroup->id) }}" class="btn btn-success mr-1 mb-1">@lang('export')</a>
-                            <button type="button" class="btn btn-danger mb-1" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $scheduleGroup->id }}">@lang('delete')</button>
+                            @can('schedules.view')
+                                <a href="{{ route('schedules.export', $scheduleGroup->id) }}" class="btn btn-warning mr-1 mb-1">@lang('export')</a>
+                            @endif
+                            @can('schedules.delete')
+                                <button type="button" class="btn btn-danger mb-1" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $scheduleGroup->id }}">@lang('delete')</button>
+                            @endif
                         </td>
                     </tr>
                 @empty

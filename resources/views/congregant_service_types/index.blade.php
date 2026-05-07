@@ -7,13 +7,21 @@
     @include('layouts.success')
 
     <div class="d-flex flex-wrap gap-2 mb-2">
-        <a class="btn btn-primary" href="{{ route('congregant_services.create') }}">@lang('congregant_services.create')</a>
-        <a class="btn btn-success" href="{{ route('congregant_services.export') }}">@lang('congregant_services.export')</a>
-        <a class="btn btn-secondary" href="{{ route('congregant_services.import.form') }}">@lang('congregant_services.import')</a>
-        <button type="button" id="bulk-delete-btn" class="btn btn-danger" disabled
-            form="bulk-form" data-bs-toggle="modal" data-bs-target="#bulkDeleteModal">
-            @lang('bulk_delete') (<span id="bulk-selected-count">0</span>)
-        </button>
+        @can('congregant_services.create')
+            <a class="btn btn-primary" href="{{ route('congregant_services.create') }}">@lang('congregant_services.create')</a>
+        @endif
+        @can('congregant_services.view')
+            <a class="btn btn-warning" href="{{ route('congregant_services.export') }}">@lang('congregant_services.export')</a>
+        @endif
+        @can('congregant_services.create')
+            <a class="btn btn-secondary" href="{{ route('congregant_services.import.form') }}">@lang('congregant_services.import')</a>
+        @endif
+        @can('congregant_services.delete')
+            <button type="button" id="bulk-delete-btn" class="btn btn-danger" disabled
+                form="bulk-form" data-bs-toggle="modal" data-bs-target="#bulkDeleteModal">
+                @lang('bulk_delete') (<span id="bulk-selected-count">0</span>)
+            </button>
+        @endif
     </div>
 
     <form action="{{ route('congregant_services.index') }}" method="GET">
@@ -85,8 +93,12 @@
                         </td>
                         <td>{{ $congregant->can_serve_consecutively ? __('willing_to_serve') : '' }}</td>
                         <td class="text-nowrap">
-                            <a class="btn btn-success mr-1 mb-1" href="{{ route('congregant_services.edit', $congregant->id) }}">@lang('edit')</a>
-                            <button type="button" class="btn btn-danger mb-1" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $congregant->id }}">@lang('delete')</button>
+                            @can('congregant_services.edit')
+                                <a class="btn btn-success mr-1 mb-1" href="{{ route('congregant_services.edit', $congregant->id) }}">@lang('edit')</a>
+                            @endif
+                            @can('congregant_services.delete')
+                                <button type="button" class="btn btn-danger mb-1" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $congregant->id }}">@lang('delete')</button>
+                            @endif
                         </td>
                     </tr>
                 @empty
@@ -101,6 +113,7 @@
     </form>
 
     {{-- Individual delete modals --}}
+    @can('congregant_services.delete')
     @foreach ($congregants as $congregant)
         <div class="modal fade" id="deleteModal{{ $congregant->id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ $congregant->id }}" aria-hidden="true">
             <div class="modal-dialog">
@@ -124,6 +137,7 @@
             </div>
         </div>
     @endforeach
+    @endif
 
     @include('layouts.bulk-delete', ['bulkDeleteConfirmText' => __('congregant_services.are_you_sure_bulk')])
 @endsection

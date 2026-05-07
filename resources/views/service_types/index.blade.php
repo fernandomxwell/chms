@@ -7,13 +7,21 @@
     @include('layouts.success')
 
     <div class="d-flex flex-wrap gap-2 mb-2">
-        <a class="btn btn-primary" href="{{ route('service_types.create') }}">@lang('service_types.create')</a>
-        <a class="btn btn-success" href="{{ route('service_types.export') }}">@lang('service_types.export')</a>
-        <a class="btn btn-secondary" href="{{ route('service_types.import.form') }}">@lang('service_types.import')</a>
-        <button type="button" id="bulk-delete-btn" class="btn btn-danger" disabled
-            form="bulk-form" data-bs-toggle="modal" data-bs-target="#bulkDeleteModal">
-            @lang('bulk_delete') (<span id="bulk-selected-count">0</span>)
-        </button>
+        @can('service_types.create')
+            <a class="btn btn-primary" href="{{ route('service_types.create') }}">@lang('service_types.create')</a>
+        @endif
+        @can('service_types.view')
+            <a class="btn btn-warning" href="{{ route('service_types.export') }}">@lang('service_types.export')</a>
+        @endif
+        @can('service_types.create')
+            <a class="btn btn-secondary" href="{{ route('service_types.import.form') }}">@lang('service_types.import')</a>
+        @endif
+        @can('service_types.delete')
+            <button type="button" id="bulk-delete-btn" class="btn btn-danger" disabled
+                form="bulk-form" data-bs-toggle="modal" data-bs-target="#bulkDeleteModal">
+                @lang('bulk_delete') (<span id="bulk-selected-count">0</span>)
+            </button>
+        @endif
     </div>
 
     @if(request('search'))
@@ -86,9 +94,15 @@
                                 @endforelse
                             </td>
                             <td class="text-nowrap">
-                                <a class="btn btn-info text-light mr-1 mb-1" href="{{ route('service_types.show', $serviceType->id) }}">@lang('show')</a>
-                                <a class="btn btn-success mr-1 mb-1" href="{{ route('service_types.edit', $serviceType->id) }}">@lang('edit')</a>
-                                <button type="button" class="btn btn-danger mb-1" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $serviceType->id }}">@lang('delete')</button>
+                                @can('service_types.view')
+                                    <a class="btn btn-info text-light mr-1 mb-1" href="{{ route('service_types.show', $serviceType->id) }}">@lang('show')</a>
+                                @endif
+                                @can('service_types.edit')
+                                    <a class="btn btn-success mr-1 mb-1" href="{{ route('service_types.edit', $serviceType->id) }}">@lang('edit')</a>
+                                @endif
+                                @can('service_types.delete')
+                                    <button type="button" class="btn btn-danger mb-1" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $serviceType->id }}">@lang('delete')</button>
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -103,6 +117,7 @@
     </form>
 
     {{-- Individual delete modals --}}
+    @can('service_types.delete')
     @foreach ($serviceTypes as $serviceType)
         <div class="modal fade" id="deleteModal{{ $serviceType->id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ $serviceType->id }}" aria-hidden="true">
             <div class="modal-dialog">
@@ -126,6 +141,7 @@
             </div>
         </div>
     @endforeach
+    @endif
 
     @include('layouts.bulk-delete', ['bulkDeleteConfirmText' => __('service_types.are_you_sure_bulk')])
 

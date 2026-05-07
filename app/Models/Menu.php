@@ -73,6 +73,7 @@ class Menu extends Model
                 'parent_id',
                 'name',
                 'link',
+                'actions',
             ]);
     }
 

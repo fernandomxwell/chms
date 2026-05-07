@@ -6,18 +6,16 @@ use App\Models\Menu;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 class GetNavigation
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        $menus = Cache::remember('menus', 3600, function () {
+        $allMenus = Cache::remember('menus', 3600, function () {
             return Menu::parent()
                 ->with('children')
                 ->orderBy('order')
@@ -25,15 +23,18 @@ class GetNavigation
                     'id',
                     'name',
                     'link',
+                    'actions',
                 ]);
         });
+
+        $permissions = optional(optional(Auth::user())->role)->permissions ?? [];
+        $menus = $this->filterMenusByPermissions($allMenus, $permissions);
 
         $routeName = Route::currentRouteName();
         $activeMenu = null;
         $virtualCrumb = null;
 
         if ($routeName) {
-            // Try exact match
             $activeMenu = Cache::remember("menu_for_route:{$routeName}", 3600, function () use ($routeName) {
                 return Menu::where('link', $routeName)
                     ->with('parents')
@@ -44,8 +45,6 @@ class GetNavigation
                     ]);
             });
 
-            // Resource Fuzzy Match: strip segments from the right until an .index route is found
-            // e.g. congregants.import.form -> congregants.import.index (miss) -> congregants.index (hit)
             if (! $activeMenu && str_contains($routeName, '.')) {
                 $parts = explode('.', $routeName);
 
@@ -94,13 +93,24 @@ class GetNavigation
         return $next($request);
     }
 
+    protected function filterMenusByPermissions(Collection $menus, array $permissions): Collection
+    {
+        return $menus->filter(function ($menu) use ($permissions) {
+            if ($menu->children->isEmpty()) {
+                return !empty(array_intersect($menu->actions ?? [], $permissions));
+            }
+
+            $menu->children = $this->filterMenusByPermissions($menu->children, $permissions);
+            return $menu->children->isNotEmpty();
+        })->values();
+    }
+
     protected function buildBreadcrumbs($menu): Collection
     {
         $breadcrumbs = collect();
 
         while ($menu) {
             $breadcrumbs->prepend($menu);
-
             $menu = $menu->parents;
         }
 
